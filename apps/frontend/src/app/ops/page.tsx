@@ -6,11 +6,11 @@ import { AgentRoster } from "@/components/AgentRoster";
 import { AgentTracePanel } from "@/components/AgentTracePanel";
 import { PlaybackControls } from "@/components/PlaybackControls";
 import { InterventionsStrip } from "@/components/InterventionCard";
+import { useCollection } from "@/lib/use-firestore";
 import type {
   AgentTrace,
   Intervention,
   OrchestratorState,
-  Venue,
   Zone,
 } from "@/lib/types";
 
@@ -24,29 +24,29 @@ const Twin3D = dynamic(() => import("@/components/Twin3D"), {
 });
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
-
-type StateResp = { venue: Venue | null; zones: Zone[]; interventions: Intervention[] };
-type TracesResp = { traces: AgentTrace[] };
 type OrchResp = { state?: OrchestratorState } & Record<string, unknown>;
 
 export default function OpsPage() {
-  const { data: s } = useSWR<StateResp>("/api/state", fetcher, {
-    refreshInterval: 2000,
-    revalidateOnFocus: false,
+  // LIVE: Firestore onSnapshot listeners (sub-500ms propagation).
+  const { data: zones } = useCollection<Zone>(
+    "venues/chinnaswamy/zones"
+  );
+  const { data: interventions } = useCollection<Intervention>(
+    "venues/chinnaswamy/interventions",
+    { orderBy: ["created_at", "desc"], limit: 20 }
+  );
+  const { data: traces } = useCollection<AgentTrace>("agent_traces", {
+    orderBy: ["timestamp", "desc"],
+    limit: 30,
   });
-  const { data: t } = useSWR<TracesResp>("/api/traces", fetcher, {
-    refreshInterval: 2000,
-    revalidateOnFocus: false,
-  });
+
+  // Orchestrator /health is NOT in Firestore — keep server polling for that.
   const { data: o } = useSWR<OrchResp>("/api/orchestrator", fetcher, {
     refreshInterval: 3000,
     revalidateOnFocus: false,
   });
 
-  const zones = s?.zones ?? [];
-  const interventions = s?.interventions ?? [];
-  const traces = t?.traces ?? [];
-  const orch = o?.state ?? {
+  const orch: OrchestratorState = o?.state ?? {
     running: false,
     ticks: 0,
     invocations: 0,
@@ -82,7 +82,7 @@ export default function OpsPage() {
             <Twin3D zones={zones} />
           </div>
           <div className="absolute top-3 right-3 mono text-[10px] uppercase tracking-wider text-ink-fade pointer-events-none">
-            {zones.length} zones · {interventions.length} interventions
+            {zones.length} zones · {interventions.length} interventions · live
           </div>
           <InterventionsStrip interventions={interventions} />
           <Legend />

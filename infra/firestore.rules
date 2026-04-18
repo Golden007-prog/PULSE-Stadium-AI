@@ -1,0 +1,36 @@
+// PULSE Firestore security rules.
+// Server writes happen via firebase-admin (pulse-runtime SA); client reads
+// are open on the three ops-surfaces. No client writes permitted anywhere.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Venue doc + zones + interventions: the 3D twin reads these.
+    match /venues/{venueId} {
+      allow read: if true;
+      match /{document=**} {
+        allow read: if true;
+      }
+    }
+
+    // Agent traces: the trace panel streams from here.
+    match /agent_traces/{traceId} {
+      allow read: if true;
+    }
+
+    // Counterfactual time-series: phase-5 split-screen.
+    match /counterfactual/{sessionId} {
+      allow read: if true;
+      match /{document=**} {
+        allow read: if true;
+      }
+    }
+
+    // Fallthrough: block everything else (including all writes).
+    match /{document=**} {
+      allow read: if false;
+      allow write: if false;
+    }
+  }
+}
