@@ -88,7 +88,11 @@ async def _run_orchestrator(prompt: str, tag: str) -> dict[str, Any]:
         role="user", parts=[genai_types.Part.from_text(text=prompt)]
     )
 
-    response_text: list[str] = []
+    # Each text event is (author, text). We use the LAST event as the
+    # summary to avoid concatenating intermediate sub-agent chatter
+    # (e.g. the Queue agent echoing its tool response). The chain + tool
+    # calls are still tracked across all events.
+    author_texts: list[tuple[str, str]] = []
     tool_calls: list[dict[str, Any]] = []
     try:
         async for ev in _runner.run_async(
@@ -99,14 +103,14 @@ async def _run_orchestrator(prompt: str, tag: str) -> dict[str, Any]:
                 trace.output_tokens += (
                     getattr(ev.usage_metadata, "candidates_token_count", 0) or 0
                 )
-            author = getattr(ev, "author", None)
-            if author and author not in trace.invocation_chain:
+            author = getattr(ev, "author", None) or "unknown"
+            if author not in trace.invocation_chain:
                 trace.invocation_chain.append(author)
             content_obj = getattr(ev, "content", None)
             if content_obj and getattr(content_obj, "parts", None):
                 for p in content_obj.parts:
                     if getattr(p, "text", None):
-                        response_text.append(p.text)
+                        author_texts.append((author, p.text))
                     if getattr(p, "function_call", None):
                         fc = p.function_call
                         tool_calls.append({
@@ -116,13 +120,24 @@ async def _run_orchestrator(prompt: str, tag: str) -> dict[str, Any]:
                         })
     except Exception as exc:
         log.exception("orchestrator invocation failed tag=%s", tag)
-        trace.outputs = {"error": str(exc), "summary": "\n".join(response_text)[:2000]}
+        fallback = author_texts[-1][1] if author_texts else ""
+        trace.outputs = {"error": str(exc), "summary": fallback[:2000]}
         trace.mark_done()
         record(trace.cost_usd)
         write_trace(_to_fs_trace(trace))
         return {"trace_id": trace.trace_id, "error": str(exc)}
 
-    summary = "\n".join(response_text).strip()[:2000]
+    # Prefer the orchestrator's final text; fall back to whatever the
+    # last agent said. This is the user-facing answer — never the
+    # intermediate Queue / tool chatter.
+    orch_texts = [t for a, t in author_texts if a == "orchestrator"]
+    if orch_texts:
+        summary = orch_texts[-1].strip()
+    elif author_texts:
+        summary = author_texts[-1][1].strip()
+    else:
+        summary = ""
+    summary = summary[:2000]
     trace.outputs = {"summary": summary, "tool_calls": tool_calls}
     trace.mark_done()
     record(trace.cost_usd)
