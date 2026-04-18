@@ -1,0 +1,51 @@
+name: "IPL Final 2026 — RCB vs CSK"
+venue: chinnaswamy
+match_id: RCB_vs_CSK_2026_final
+duration_s: 300
+
+base_rates:
+  turnstile_per_s: 3.0
+  pos_per_s: 1.5
+  restroom_per_s: 0.5
+
+zones:
+  gates: [G-1, G-2, G-3, G-4]
+  stands: [S-A, S-B, S-C, S-D]
+  concessions: [F-E, F-W]
+  restrooms: [C-01, C-12]
+
+events:
+  - t: 30
+    type: density_spike
+    zone: G-3
+    value: 5.2
+    reason: "Gate 3 entry bottleneck forming — predicted crush risk in 12 minutes"
+
+  - t: 60
+    type: fan_query
+    fan_id: raj-b-204
+    seat: B-204
+    query: "beer?"
+    modality: voice
+    reason: "Fan Raj (seat B-204) asks about nearest beer stall between overs"
+
+  - t: 120
+    type: anomaly
+    zone: C-12
+    anomaly_type: fall
+    severity: high
+    confidence: 0.93
+    reason: "Person fallen at Concourse South zone C-12; Vision flagged for Safety escalation"
+
+  - t: 150
+    type: negotiation_trigger
+    reason: "Care Agent requests concourse closure; Flow + Revenue negotiate reroute and compensating offer"
+
+  - t: 210
+    type: resolution_metric
+    metrics:
+      wait_time_reduction_pct: 47
+      peak_density_reduction_pct: 38
+      medical_response_time_s: 195
+      revenue_lift_pct: 18
+    reason: "Scripted resolution KPIs for judges' metrics card"

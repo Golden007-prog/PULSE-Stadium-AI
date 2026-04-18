@@ -1,0 +1,182 @@
+{
+  "type": "FeatureCollection",
+  "name": "chinnaswamy",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "properties": {
+    "venue_id": "chinnaswamy",
+    "venue_name": "M. Chinnaswamy Stadium",
+    "city": "Bengaluru",
+    "center": [77.5996, 12.9788],
+    "note": "Hand-drawn approximation. Coordinates are centred on the real stadium; polygons are stylised for demo rendering, not surveyed."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "id": "G-1", "name": "Gate 1 (West)", "type": "gate", "capacity": 500, "throughput_per_min": 40 },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.59810, 12.97860],
+          [77.59835, 12.97860],
+          [77.59835, 12.97900],
+          [77.59810, 12.97900],
+          [77.59810, 12.97860]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "G-2", "name": "Gate 2 (North)", "type": "gate", "capacity": 600, "throughput_per_min": 45 },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.59940, 12.98010],
+          [77.59990, 12.98010],
+          [77.59990, 12.98030],
+          [77.59940, 12.98030],
+          [77.59940, 12.98010]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "G-3", "name": "Gate 3 (East)", "type": "gate", "capacity": 700, "throughput_per_min": 50 },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.60115, 12.97860],
+          [77.60140, 12.97860],
+          [77.60140, 12.97900],
+          [77.60115, 12.97900],
+          [77.60115, 12.97860]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "G-4", "name": "Gate 4 (South)", "type": "gate", "capacity": 500, "throughput_per_min": 40 },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.59940, 12.97730],
+          [77.59990, 12.97730],
+          [77.59990, 12.97750],
+          [77.59940, 12.97750],
+          [77.59940, 12.97730]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "S-A", "name": "Stand A (North)", "type": "seating", "capacity": 10000 },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.59870, 12.97935],
+          [77.60055, 12.97935],
+          [77.60055, 12.98000],
+          [77.59870, 12.98000],
+          [77.59870, 12.97935]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "S-B", "name": "Stand B (East)", "type": "seating", "capacity": 10000 },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.60055, 12.97820],
+          [77.60115, 12.97820],
+          [77.60115, 12.97935],
+          [77.60055, 12.97935],
+          [77.60055, 12.97820]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "S-C", "name": "Stand C (South)", "type": "seating", "capacity": 10000 },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.59870, 12.97760],
+          [77.60055, 12.97760],
+          [77.60055, 12.97820],
+          [77.59870, 12.97820],
+          [77.59870, 12.97760]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "S-D", "name": "Stand D (West)", "type": "seating", "capacity": 10000 },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.59830, 12.97820],
+          [77.59870, 12.97820],
+          [77.59870, 12.97935],
+          [77.59830, 12.97935],
+          [77.59830, 12.97820]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "C-01", "name": "Concourse North", "type": "concourse", "capacity": 2500 },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.59870, 12.97905],
+          [77.60055, 12.97905],
+          [77.60055, 12.97935],
+          [77.59870, 12.97935],
+          [77.59870, 12.97905]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "C-12", "name": "Concourse South", "type": "concourse", "capacity": 2500, "tags": ["medical-route"] },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.59870, 12.97820],
+          [77.60055, 12.97820],
+          [77.60055, 12.97850],
+          [77.59870, 12.97850],
+          [77.59870, 12.97820]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "F-E", "name": "Concession East", "type": "concession", "capacity": 400, "stalls": 8 },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.60055, 12.97870],
+          [77.60085, 12.97870],
+          [77.60085, 12.97905],
+          [77.60055, 12.97905],
+          [77.60055, 12.97870]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": "F-W", "name": "Concession West", "type": "concession", "capacity": 400, "stalls": 8 },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [77.59845, 12.97870],
+          [77.59870, 12.97870],
+          [77.59870, 12.97905],
+          [77.59845, 12.97905],
+          [77.59845, 12.97870]
+        ]]
+      }
+    }
+  ]
+}
