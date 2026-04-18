@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" fill="#0A0D14"/>
+  <circle cx="96" cy="96" r="62" fill="none" stroke="#00E5FF" stroke-width="6"/>
+  <circle cx="96" cy="96" r="42" fill="none" stroke="#00E5FF" stroke-width="3" opacity="0.6"/>
+  <circle cx="96" cy="96" r="20" fill="#00E5FF"/>
+  <text x="96" y="172" font-family="system-ui, sans-serif" font-size="16" font-weight="700" text-anchor="middle" fill="#E1E2EC" letter-spacing="4">PULSE</text>
+</svg>

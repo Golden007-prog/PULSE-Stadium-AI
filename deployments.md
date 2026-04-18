@@ -7,7 +7,7 @@ Running list of PULSE service URLs. Updated after every deploy.
 | pulse-simulator | asia-south1 | https://pulse-simulator-bdyqmr2w3q-el.a.run.app | `pulse-simulator-00001-hhc` | 2026-04-18 12:35 UTC |
 | pulse-orchestrator | asia-south1 | https://pulse-orchestrator-bdyqmr2w3q-el.a.run.app | `pulse-orchestrator-00004-b84` | 2026-04-18 13:20 UTC |
 | pulse-frontend | asia-south1 | https://pulse-frontend-524510164011.asia-south1.run.app | `pulse-frontend-00001-fq5` | 2026-04-18 13:35 UTC |
-| pulse-fan-pwa | asia-south1 | _pending phase 4_ | — | — |
+| pulse-fan-pwa | asia-south1 | https://pulse-fan-pwa-524510164011.asia-south1.run.app | `pulse-fan-pwa-00001-lf5` | 2026-04-18 13:55 UTC |
 | pulse-counterfactual | asia-south1 | _pending phase 5_ | — | — |
 | pulse-perception | asia-south1 | _deferred post-hackathon_ | — | — |
 
@@ -38,6 +38,14 @@ Running list of PULSE service URLs. Updated after every deploy.
   - `/api/orchestrator` — proxy to `pulse-orchestrator/health`
   - `/api/sim/reset` — proxy POST to `pulse-simulator/scenario/reset`
 - Built with Next.js 15 (App Router, `output: standalone`), React 18, Tailwind, React Three Fiber for the extruded-zone heatmap
+
+## Fan PWA
+
+- **Public, installable** (Web App Manifest at `/manifest.webmanifest`).
+- 6 screens: onboarding → concierge (voice/text) → queues → wayfind → nudges → match.
+- Voice input: browser Web Speech API (`SpeechRecognition` on Chrome/Edge/Android). Voice output: `speechSynthesis`. **Gemini Live WebSocket intentionally skipped** — plan called it "finicky from Cloud Run"; phase 6 can revisit.
+- `POST /api/concierge` proxies to `pulse-orchestrator/trigger` with a fan-query prompt. End-to-end "beer?" confirmed: chain `orchestrator → concierge → queue`, 3.8k tokens, $0.005, 12s.
+- Match state is a frozen 2024 IPL final snapshot at `/api/match`. CricAPI polling via Cloud Scheduler → Firestore deferred to phase 6.
 
 ## Orchestrator
 
