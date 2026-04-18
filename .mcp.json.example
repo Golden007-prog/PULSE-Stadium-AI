@@ -1,0 +1,45 @@
+{
+  "mcpServers": {
+    "gcloud": {
+      "command": "npx",
+      "args": ["-y", "@google-cloud/gcloud-mcp"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "ABSOLUTE_PATH_TO_GCP_SA_KEY_JSON",
+        "GOOGLE_CLOUD_PROJECT": "pulse-stadium-ai",
+        "CLOUDSDK_CORE_PROJECT": "pulse-stadium-ai"
+      }
+    },
+    "gcp-storage": {
+      "command": "npx",
+      "args": ["-y", "@google-cloud/storage-mcp"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "ABSOLUTE_PATH_TO_GCP_SA_KEY_JSON",
+        "GOOGLE_CLOUD_PROJECT": "pulse-stadium-ai"
+      }
+    },
+    "gcp-observability": {
+      "command": "npx",
+      "args": ["-y", "@google-cloud/observability-mcp"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "ABSOLUTE_PATH_TO_GCP_SA_KEY_JSON",
+        "GOOGLE_CLOUD_PROJECT": "pulse-stadium-ai"
+      }
+    },
+    "firebase": {
+      "command": "npx",
+      "args": ["-y", "firebase-tools@latest", "experimental:mcp"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "ABSOLUTE_PATH_TO_FIREBASE_ADMINSDK_JSON",
+        "FIREBASE_PROJECT": "pulse-stadium-ai",
+        "GOOGLE_CLOUD_PROJECT": "pulse-stadium-ai"
+      }
+    },
+    "stitch": {
+      "type": "http",
+      "url": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "YOUR_STITCH_API_KEY"
+      }
+    }
+  }
+}
