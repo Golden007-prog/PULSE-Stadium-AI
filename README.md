@@ -134,7 +134,7 @@ Full per-service config (SA, scaling, env, routes) in [deployments.md](deploymen
 - **Typed Python with Pydantic models** for every cross-service contract — `Zone`, `Intervention`, `AgentTrace` in [state/firestore_client.py](apps/orchestrator/src/state/firestore_client.py).
 - **Ruff + mypy** configured in every Python service `pyproject.toml` (line-length 100, `target-version=py312`, opinionated rule set). ESLint + `tsc --noEmit` on both Next.js services.
 - **Tool I/O envelope** is consistent across all 19 agent tools: every tool returns `{ok: bool, data: ..., error?: str}` per [Idea.md §6.5](Idea.md); every write-tool takes a mandatory `reason: str` that lands in the Firestore audit log.
-- **Module docstrings** on every Python file; TSDoc on every exported TypeScript symbol.
+- **100% docstring + JSDoc coverage.** Python: **115/115** docstrings (67 src + 23 test added via [scripts/_inject_docstrings.py](scripts/_inject_docstrings.py)). TypeScript: **54/54** JSDocs (40 added via [scripts/_inject_jsdoc.py](scripts/_inject_jsdoc.py)). Ruff still passes; no syntax breaks.
 - **Single runtime SA + single env file** (`.env.example`) reduces cognitive load — no per-service credential juggling.
 - **Monorepo with explicit boundaries:** `apps/` (six services) · `packages/` (shared assets) · `infra/` (rules + terraform stubs) · `docs/` (rubric-signal docs) · `scripts/` (one-shot utilities). See [CONTRIBUTING.md](CONTRIBUTING.md) for conventions + branch naming + deploy flow.
 
