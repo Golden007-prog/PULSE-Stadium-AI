@@ -13,6 +13,7 @@ from typing import Any
 
 @dataclass
 class EventBuffer:
+    """In-memory buffer of recent Pub/Sub signals. The tick loop reads; the subscriber writes. Single process-wide singleton."""
     attendance: int = 0
     zone_counts: dict[str, int] = field(default_factory=dict)
     fan_queries: deque[dict[str, Any]] = field(default_factory=lambda: deque(maxlen=50))

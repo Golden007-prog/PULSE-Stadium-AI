@@ -20,12 +20,14 @@ _STUB_QUEUES: dict[str, dict[str, Any]] = {
 
 
 def _match_category(q: dict[str, Any], category: str) -> bool:
+    """Internal helper: does this queue serve the requested category (beer/food/restroom)?"""
     cat = category.lower()
     items = [i.lower() for i in q.get("items", [])]
     return cat in items or any(cat in i or i in cat for i in items)
 
 
 def find_nearest(fan_id: str, seat: str, category: str) -> dict[str, Any]:
+    """Return the three lowest-wait queues for a given category near a fan seat."""
     candidates = [
         {"queue_id": qid, **q}
         for qid, q in _STUB_QUEUES.items()
@@ -44,6 +46,7 @@ def find_nearest(fan_id: str, seat: str, category: str) -> dict[str, Any]:
 
 
 def get_queue_state(queue_id: str) -> dict[str, Any]:
+    """Fetch the current state of a named queue."""
     q = _STUB_QUEUES.get(queue_id)
     if not q:
         return {"ok": False, "error": f"queue {queue_id} unknown"}
@@ -53,6 +56,7 @@ def get_queue_state(queue_id: str) -> dict[str, Any]:
 def nudge_fans(
     zone_ids: list[str], queue_id: str, alt_queue_id: str, reason: str
 ) -> dict[str, Any]:
+    """Push fans from one queue to an alternative queue; writes the nudge as an Intervention."""
     iid = add_intervention(
         Intervention(
             initiating_agent="queue",

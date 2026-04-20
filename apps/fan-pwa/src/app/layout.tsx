@@ -29,6 +29,7 @@ export const viewport: Viewport = {
   // The Fan PWA layout is already fluid so we don't need to lock scale.
 };
 
+/** Root HTML layout for the fan PWA; registers the service worker manifest. */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${jbmono.variable}`}>

@@ -10,6 +10,7 @@ from .firestore_client import Zone, list_zones
 
 @dataclass
 class VenueSnapshot:
+    """Immutable snapshot of reality the Orchestrator reasons over on each tick."""
     zones: list[Zone]
     attendance: int
     alerts: list[dict[str, Any]]
@@ -17,12 +18,15 @@ class VenueSnapshot:
     anomalies: list[dict[str, Any]]
 
     def hot_zones(self, threshold: float = 3.5) -> list[Zone]:
+        """Return zones at or above the given density threshold (default 3.5 p/m^2)."""
         return [z for z in self.zones if z.current_density >= threshold]
 
     def crush_risk(self, threshold: float = 4.0) -> list[Zone]:
+        """Return zones at or above the crush-risk threshold (default 4.0 p/m^2)."""
         return [z for z in self.zones if z.current_density >= threshold]
 
     def to_prompt_json(self) -> dict[str, Any]:
+        """Serialise the snapshot into the JSON shape the Orchestrator prompt consumes."""
         return {
             "zones": [
                 {
@@ -42,6 +46,7 @@ class VenueSnapshot:
 
 
 def read_snapshot(buffer: EventBuffer) -> VenueSnapshot:
+    """Combine the live Firestore zones with the in-memory event buffer into a VenueSnapshot."""
     return VenueSnapshot(
         zones=list_zones(),
         attendance=buffer.attendance,

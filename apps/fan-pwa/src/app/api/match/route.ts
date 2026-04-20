@@ -18,6 +18,7 @@ const MATCH: MatchState = {
   end_of_over_in_s: 45,
 };
 
+/** Return the scripted scenario's current match score and clock. */
 export async function GET() {
   return NextResponse.json(MATCH);
 }

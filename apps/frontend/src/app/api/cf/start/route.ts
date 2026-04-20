@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 
 const CF_URL = process.env.COUNTERFACTUAL_URL ?? "";
 
+/** Start the counterfactual ABS simulation for the current incident window. */
 export async function POST(req: Request) {
   if (!CF_URL) {
     return NextResponse.json(

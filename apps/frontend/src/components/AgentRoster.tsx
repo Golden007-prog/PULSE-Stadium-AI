@@ -45,6 +45,7 @@ const AGENTS: AgentRow[] = [
   },
 ];
 
+/** Displays the six specialist agents with live status dots driven by recent trace activity. */
 export function AgentRoster({
   traces,
   totalUsd,

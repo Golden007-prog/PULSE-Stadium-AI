@@ -17,6 +17,7 @@ const QUEUES: QueueInfo[] = [
   { queue_id: "c-12-restroom", zone: "C-12", wait_s: 150, staff: 0, items: ["restroom"] },
 ];
 
+/** Return live queue ETAs and suggested reroutes for the fan PWA. */
 export async function GET() {
   return NextResponse.json({ queues: QUEUES });
 }

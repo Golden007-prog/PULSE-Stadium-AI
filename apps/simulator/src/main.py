@@ -59,6 +59,7 @@ _task: asyncio.Task | None = None
 
 
 def publish(event: dict[str, Any]) -> None:
+    """Publish an event to the sensor-events Pub/Sub topic with the standard envelope fields."""
     event.setdefault("event_id", str(uuid.uuid4()))
     event.setdefault("venue_id", VENUE_ID)
     event.setdefault("session_id", state.get("session_id"))
@@ -69,6 +70,7 @@ def publish(event: dict[str, Any]) -> None:
 
 
 def _poisson(lam: float) -> int:
+    """Sample a non-negative integer from a Poisson(lam) distribution via the standard inverse-transform algorithm."""
     if lam <= 0:
         return 0
     L = math.exp(-lam)
@@ -82,6 +84,7 @@ def _poisson(lam: float) -> int:
 
 
 def _emit_scripted(ev: dict[str, Any]) -> None:
+    """Translate a scripted scenario entry into its corresponding sensor-events message."""
     state["last_scripted_event"] = ev
     log.info("scripted_event t=%ss type=%s zone=%s", ev.get("t"), ev.get("type"), ev.get("zone"))
     kind = ev["type"]
@@ -130,6 +133,7 @@ def _emit_scripted(ev: dict[str, Any]) -> None:
 
 
 async def run_scenario() -> None:
+    """Main scenario loop. Emits base-rate events every tick and dispatches scripted entries at their scheduled offsets."""
     path = SCENARIOS_DIR / SCENARIO_FILE
     scenario = yaml.safe_load(path.read_text(encoding="utf-8"))
 
@@ -205,6 +209,7 @@ async def run_scenario() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """FastAPI lifespan context. Starts the scenario task on boot if SCENARIO_AUTOSTART is set; cancels on shutdown."""
     global _task
     if AUTOSTART:
         _task = asyncio.create_task(run_scenario(), name="scenario-runner")
@@ -223,6 +228,7 @@ app = FastAPI(title="pulse-simulator", lifespan=lifespan)
 
 @app.get("/healthz")
 def healthz() -> dict[str, Any]:
+    """Liveness endpoint plus scenario state (running, ticks, events published, last scripted event)."""
     return {
         "status": "ok",
         "service": "pulse-simulator",

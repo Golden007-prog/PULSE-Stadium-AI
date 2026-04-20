@@ -8,6 +8,7 @@ interface Props {
   onStop: () => void;
 }
 
+/** Counterfactual split-screen toggle; starts/stops the what-if ABS simulation. */
 export function CfToggle({ active, sessionId, onStart, onStop }: Props) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);

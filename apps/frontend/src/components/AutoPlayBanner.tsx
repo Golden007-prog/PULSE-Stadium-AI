@@ -8,6 +8,7 @@ interface Props {
   onSkip: () => void;
 }
 
+/** Shows the scripted-scenario banner with current act and countdown during autoplay. */
 export function AutoPlayBanner({
   elapsedMs,
   totalMs,

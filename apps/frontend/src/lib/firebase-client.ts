@@ -31,12 +31,14 @@ export const firebaseConfig = {
 let _app: FirebaseApp | null = null;
 let _db: Firestore | null = null;
 
+/** Lazy-init singleton Firebase client app using public config from env. */
 export function clientApp(): FirebaseApp {
   if (_app) return _app;
   _app = getApps().length ? getApp() : initializeApp(firebaseConfig);
   return _app;
 }
 
+/** Return the client-side Firestore instance for onSnapshot listeners. */
 export function clientDb(): Firestore {
   if (_db) return _db;
   _db = getFirestore(clientApp());

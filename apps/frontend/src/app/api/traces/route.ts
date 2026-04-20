@@ -4,6 +4,7 @@ import { getDb, toPlain } from "@/lib/firestore-admin";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
+/** Return the N most recent agent traces for the trace panel. */
 export async function GET() {
   const db = getDb();
   const snap = await db

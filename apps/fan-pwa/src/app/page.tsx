@@ -11,6 +11,7 @@ import type { FanProfile } from "@/lib/types";
 
 const STORAGE_KEY = "pulse-fan-profile";
 
+/** Tabbed shell that routes between Match, Queues, Wayfind, Nudges, and Concierge screens. */
 export default function FanPwaHome() {
   const [fan, setFan] = useState<FanProfile | null>(null);
   const [tab, setTab] = useState<TabId>("concierge");

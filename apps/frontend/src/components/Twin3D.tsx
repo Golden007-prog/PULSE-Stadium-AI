@@ -7,6 +7,7 @@ import type { Zone } from "@/lib/types";
 
 export type TwinVariant = "reality" | "counterfactual";
 
+/** React-Three-Fiber 3D digital twin of Chinnaswamy stadium with per-zone density shading. */
 export default function Twin3D({
   zones,
   variant = "reality",

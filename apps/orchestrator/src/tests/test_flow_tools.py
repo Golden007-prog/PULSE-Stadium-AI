@@ -12,6 +12,7 @@ from src.tools import flow_tools
 
 
 def test_reroute_fans_writes_intervention_and_reduces_hot_zone(hot_zone: Zone) -> None:
+    """Reroute fans writes intervention and reduces hot zone."""
     with (
         patch.object(flow_tools, "add_intervention", return_value="iv-abc") as add_iv,
         patch.object(flow_tools, "get_zone", return_value=hot_zone),
@@ -38,6 +39,7 @@ def test_reroute_fans_writes_intervention_and_reduces_hot_zone(hot_zone: Zone) -
 
 
 def test_reroute_fans_skips_density_update_when_already_calm(calm_zone: Zone) -> None:
+    """Reroute fans skips density update when already calm."""
     with (
         patch.object(flow_tools, "add_intervention", return_value="iv-calm"),
         patch.object(flow_tools, "get_zone", return_value=calm_zone),
@@ -53,6 +55,7 @@ def test_reroute_fans_skips_density_update_when_already_calm(calm_zone: Zone) ->
 
 
 def test_get_zone_density_returns_error_envelope_for_unknown_zone() -> None:
+    """Get zone density returns error envelope for unknown zone."""
     with patch.object(flow_tools, "get_zone", return_value=None):
         result = flow_tools.get_zone_density("NON-EXISTENT")
 

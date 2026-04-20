@@ -9,6 +9,7 @@ export const AGENT_COLORS: Record<string, string> = {
   revenue: "#43E188",
 };
 
+/** Map an agent id (flow/care/revenue/...) to its brand-consistent hex color. */
 export function agentColor(id: string): string {
   return AGENT_COLORS[id] ?? "#BAC9CC";
 }

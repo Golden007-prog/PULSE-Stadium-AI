@@ -7,6 +7,7 @@ from typing import Any
 
 
 def emit_restroom(restrooms: list[str], publish: Callable[[dict[str, Any]], None]) -> None:
+    """Emit a restroom occupancy delta for a random restroom zone."""
     if not restrooms:
         return
     zone = random.choice(restrooms)

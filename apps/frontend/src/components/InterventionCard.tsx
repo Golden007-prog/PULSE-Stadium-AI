@@ -2,6 +2,7 @@
 import type { Intervention } from "@/lib/types";
 import { agentColor } from "@/lib/colors";
 
+/** Horizontal strip of the latest interventions with agent-colored badges. */
 export function InterventionsStrip({
   interventions,
 }: {

@@ -39,6 +39,7 @@ const Twin3D = dynamic(() => import("@/components/Twin3D"), {
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 type OrchResp = { state?: OrchestratorState } & Record<string, unknown>;
 
+/** Ops page wrapper; fetches initial venue state on the server and hydrates the client twin. */
 export default function OpsPageWrap() {
   return (
     <Suspense fallback={<div className="h-screen w-screen bg-surface-dim" />}>

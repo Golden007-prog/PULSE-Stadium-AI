@@ -34,6 +34,7 @@ _MATCH_STATE: dict[str, Any] = {
 
 
 def get_fan_context(fan_id: str) -> dict[str, Any]:
+    """Return the fan seat + preferences for Concierge replies."""
     profile = _FAN_PROFILES.get(fan_id)
     if not profile:
         return {"ok": False, "error": f"fan {fan_id} unknown"}
@@ -41,4 +42,5 @@ def get_fan_context(fan_id: str) -> dict[str, Any]:
 
 
 def get_match_state() -> dict[str, Any]:
+    """Return the current (frozen) Cricinfo-style match state."""
     return {"ok": True, "data": _MATCH_STATE}

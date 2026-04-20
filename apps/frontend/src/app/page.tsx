@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { loadTimeline, startDemo } from "@/lib/autoplay";
 
+/** Landing page; redirects to /ops after autoplay warmup completes. */
 export default function Landing() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);

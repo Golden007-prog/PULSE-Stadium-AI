@@ -6,6 +6,7 @@ from typing import Any
 
 
 def emit_cctv_anomaly(ev: dict[str, Any], publish: Callable[[dict[str, Any]], None]) -> None:
+    """Emit a synthetic vision_anomaly event from a scripted scenario entry."""
     publish({
         "type": "vision_anomaly",
         "zone_id": ev["zone"],

@@ -13,6 +13,7 @@ const MATCH = {
   required: "57 from 9",
 };
 
+/** Live match score + clock ticker pulled from the scripted scenario state. */
 export function MatchTicker({ attendance }: { attendance: number }) {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {

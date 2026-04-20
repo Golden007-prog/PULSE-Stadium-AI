@@ -38,6 +38,7 @@ def _seed_engine() -> ABSEngine:
 
 
 def test_engine_step_advances_tick_and_returns_all_zones() -> None:
+    """Engine step advances tick and returns all zones."""
     random.seed(1)
     eng = _seed_engine()
     step: EngineStep = eng.step()

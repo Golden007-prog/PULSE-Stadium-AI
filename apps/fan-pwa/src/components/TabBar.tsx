@@ -2,6 +2,7 @@
 
 export type TabId = "concierge" | "queues" | "wayfind" | "nudges" | "match";
 
+/** Bottom navigation tab bar for the fan PWA; a11y-labelled for screen readers. */
 export function TabBar({
   active,
   onChange,

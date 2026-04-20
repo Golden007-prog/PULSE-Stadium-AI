@@ -13,6 +13,7 @@ type RecognitionLike = {
   abort: () => void;
 };
 
+/** True when the current browser supports the Web Speech recognition API. */
 export function supportsSpeechRecognition(): boolean {
   if (typeof window === "undefined") return false;
   return Boolean(
@@ -22,10 +23,12 @@ export function supportsSpeechRecognition(): boolean {
   );
 }
 
+/** True when the current browser supports the Web Speech synthesis API. */
 export function supportsSpeechSynthesis(): boolean {
   return typeof window !== "undefined" && "speechSynthesis" in window;
 }
 
+/** Construct a configured SpeechRecognition instance for the given locale. */
 export function createRecognition(lang = "en-IN"): RecognitionLike | null {
   if (typeof window === "undefined") return null;
   const W = window as unknown as {
@@ -41,6 +44,7 @@ export function createRecognition(lang = "en-IN"): RecognitionLike | null {
   return r;
 }
 
+/** Speak the provided text using the browser's synthesis engine (best-effort). */
 export function speak(text: string, lang = "en-IN"): void {
   if (!supportsSpeechSynthesis()) return;
   try {

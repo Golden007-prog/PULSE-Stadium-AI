@@ -7,6 +7,7 @@ from typing import Any
 
 
 def emit_turnstile(gates: list[str], publish: Callable[[dict[str, Any]], None]) -> None:
+    """Emit a single turnstile entry scan at a randomly-picked gate (G-3 weighted higher for natural congestion)."""
     if not gates:
         return
     # weight Gate 3 slightly higher to produce natural congestion at that gate

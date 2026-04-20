@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 
+/** Play/pause/restart controls for the deterministic scripted scenario. */
 export function PlaybackControls({
   ticks,
   lastSummary,

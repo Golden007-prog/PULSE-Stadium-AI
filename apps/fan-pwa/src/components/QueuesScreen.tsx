@@ -4,6 +4,7 @@ import type { QueueInfo } from "@/lib/types";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
+/** Live queue ETA board with suggested reroutes from the Queue agent. */
 export function QueuesScreen() {
   const { data } = useSWR<{ queues: QueueInfo[] }>("/api/queues", fetcher, {
     refreshInterval: 5000,

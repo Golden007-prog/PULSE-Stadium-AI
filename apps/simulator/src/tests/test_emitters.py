@@ -20,13 +20,16 @@ class _Recorder:
     """Capture every event ``publish`` is called with."""
 
     def __init__(self) -> None:
+        """Initialise the test helper."""
         self.events: list[dict[str, Any]] = []
 
     def __call__(self, event: dict[str, Any]) -> None:
+        """Record a single event for later assertion."""
         self.events.append(event)
 
 
 def test_turnstile_picks_gate_from_list_and_emits_scan() -> None:
+    """Turnstile picks gate from list and emits scan."""
     rec = _Recorder()
     gates = ["G-1", "G-2", "G-3", "G-4"]
     emit_turnstile(gates, rec)
@@ -41,12 +44,14 @@ def test_turnstile_picks_gate_from_list_and_emits_scan() -> None:
 
 
 def test_turnstile_with_empty_gates_is_a_noop() -> None:
+    """Turnstile with empty gates is a noop."""
     rec = _Recorder()
     emit_turnstile([], rec)
     assert rec.events == []
 
 
 def test_pos_picks_concession_and_items_are_inr_priced() -> None:
+    """Pos picks concession and items are inr priced."""
     rec = _Recorder()
     concessions = ["F-E", "F-W"]
     emit_pos(concessions, rec)
@@ -63,6 +68,7 @@ def test_pos_picks_concession_and_items_are_inr_priced() -> None:
 
 
 def test_restroom_emits_delta_and_gender_stall() -> None:
+    """Restroom emits delta and gender stall."""
     rec = _Recorder()
     restrooms = ["C-01", "C-12"]
     emit_restroom(restrooms, rec)
@@ -76,6 +82,7 @@ def test_restroom_emits_delta_and_gender_stall() -> None:
 
 
 def test_cctv_anomaly_passes_scripted_fields_through() -> None:
+    """Cctv anomaly passes scripted fields through."""
     rec = _Recorder()
     scripted = {
         "zone": "C-12",

@@ -76,6 +76,7 @@ class EngineStep:
 
 @dataclass
 class MetricsTracker:
+    """Rolling ABS metrics: peak density, over-threshold seconds, unique incidents-would-occur."""
     peak_density: float = 0.0
     peak_zone: str = ""
     over_threshold_seconds: int = 0        # zone-seconds above 5.0 p/m² anywhere
@@ -84,6 +85,7 @@ class MetricsTracker:
     _seen_critical: set[str] = field(default_factory=set)
 
     def observe(self, step: EngineStep) -> None:
+        """Fold one EngineStep into the rolling metrics."""
         for zid, d in step.zones.items():
             if d > self.peak_density:
                 self.peak_density = d
@@ -98,6 +100,7 @@ class MetricsTracker:
                 self.incidents_would_occur += 1
 
     def as_dict(self) -> dict[str, float | int | str]:
+        """Return a JSON-safe dict of the metrics for Firestore writes."""
         return {
             "peak_density": round(self.peak_density, 2),
             "peak_zone": self.peak_zone,
@@ -109,11 +112,13 @@ class MetricsTracker:
 
 @dataclass
 class ABSEngine:
+    """Density-only agent-based simulator. Each tick advances every zone via intrinsic inflow + diffusion."""
     zones: dict[str, float]
     tick: int = 0
 
     @classmethod
     def from_initial(cls, initial: Iterable[tuple[str, float]]) -> ABSEngine:
+        """Factory: build an ABSEngine from an iterable of (zone_id, density) pairs."""
         return cls(zones={zid: max(0.0, float(d)) for zid, d in initial})
 
     def step(self, dt_s: int = 5) -> EngineStep:

@@ -5,6 +5,7 @@ const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT ?? "pulse-stadium-ai";
 
 let _db: Firestore | null = null;
 
+/** Return the admin Firestore handle; boots firebase-admin on first call. */
 export function getDb(): Firestore {
   if (_db) return _db;
   if (getApps().length === 0) {
@@ -18,6 +19,7 @@ export function getDb(): Firestore {
 }
 
 // Convert Firestore Timestamp / FieldValue into plain JSON-safe values.
+/** Deep-convert Firestore Timestamp/DocumentReference values to JSON-safe primitives. */
 export function toPlain<T = unknown>(obj: unknown): T {
   if (obj === null || obj === undefined) return obj as T;
   if (Array.isArray(obj)) return obj.map(toPlain) as unknown as T;

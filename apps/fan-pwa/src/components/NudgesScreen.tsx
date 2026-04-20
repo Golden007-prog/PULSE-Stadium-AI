@@ -26,6 +26,7 @@ const SEEDED: Nudge[] = [
   },
 ];
 
+/** Shows revenue-agent nudges (offers, redirects) the fan is currently eligible for. */
 export function NudgesScreen() {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {

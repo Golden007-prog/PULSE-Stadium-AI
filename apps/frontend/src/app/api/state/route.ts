@@ -6,6 +6,7 @@ export const revalidate = 0;
 
 const VENUE_ID = process.env.PULSE_VENUE_ID ?? "chinnaswamy";
 
+/** Return the current venue snapshot read straight from admin Firestore. */
 export async function GET() {
   const db = getDb();
   const venueRef = db.collection("venues").doc(VENUE_ID);

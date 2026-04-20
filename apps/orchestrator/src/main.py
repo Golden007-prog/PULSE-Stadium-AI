@@ -175,6 +175,7 @@ async def _run_orchestrator(prompt: str, tag: str) -> dict[str, Any]:
 
 
 def _to_fs_trace(t: InvocationTrace) -> FsAgentTrace:
+    """Convert an in-memory InvocationTrace into the Firestore AgentTrace wire shape."""
     return FsAgentTrace(
         trace_id=t.trace_id,
         root_agent=t.root_agent,
@@ -189,6 +190,7 @@ def _to_fs_trace(t: InvocationTrace) -> FsAgentTrace:
 
 
 def _build_tick_prompt(snapshot) -> tuple[str, bool]:
+    """Build the per-tick prompt for the Orchestrator agent. Returns (prompt, is_actionable); when nothing is actionable the caller skips the Gemini call."""
     d = snapshot.to_prompt_json()
     hot = [z for z in d["zones"] if z["current_density"] >= 4.0]
     anomalies = d["anomalies"]
@@ -214,6 +216,7 @@ def _build_tick_prompt(snapshot) -> tuple[str, bool]:
 
 
 async def _tick_loop() -> None:
+    """Main 5-second tick loop. Drains pending fan queries then checks the venue snapshot and invokes the Orchestrator if state is actionable."""
     state["running"] = True
     log.info("tick loop started (period=%dms, budget=$%.2f)", TICK_MS, COST_BUDGET)
     while state["running"]:
@@ -249,6 +252,7 @@ async def _tick_loop() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """FastAPI lifespan context. Starts the Pub/Sub subscriber + tick-loop task on boot, cancels them cleanly on shutdown."""
     global _subscriber, _sub_future, _tick_task
     try:
         _subscriber, _sub_future = start_subscriber()
@@ -276,6 +280,7 @@ app = FastAPI(title="pulse-orchestrator", lifespan=lifespan)
 
 @app.get("/health")
 def healthz() -> dict[str, Any]:
+    """Liveness endpoint plus live tick/invocation counters and cumulative USD spend."""
     return {
         "status": "ok",
         "service": "pulse-orchestrator",
@@ -296,6 +301,7 @@ def healthz() -> dict[str, Any]:
 
 @app.post("/trigger")
 async def manual_trigger(payload: dict[str, Any]) -> dict[str, Any]:
+    """Manually invoke the Orchestrator with a free-form prompt. Used for smoke tests and the fan-PWA /api/concierge proxy."""
     prompt = (payload or {}).get("prompt", "").strip()
     if not prompt:
         raise HTTPException(status_code=400, detail="body must include non-empty 'prompt'")

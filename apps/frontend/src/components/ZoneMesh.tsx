@@ -22,6 +22,7 @@ function densityColorCf(d: number): string {
   return "#FF1A3A";
 }
 
+/** Single extruded zone mesh; color reflects live density, height encodes queue length. */
 export function ZoneMesh({
   zone,
   variant = "reality",

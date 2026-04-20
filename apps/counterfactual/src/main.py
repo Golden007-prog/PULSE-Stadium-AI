@@ -45,6 +45,7 @@ _sessions: dict[str, asyncio.Task[None]] = {}
 
 
 def db() -> firestore.Client:
+    """Lazily-initialised Firestore client."""
     global _db
     if _db is None:
         _db = firestore.Client(project=PROJECT)
@@ -64,6 +65,7 @@ def _fetch_initial_zones() -> list[tuple[str, float]]:
 
 
 async def _run(session_id: str) -> None:
+    """Background task: seed from current reality zones, tick every 5s up to MAX_TICKS, write per-tick state + rolling metrics."""
     initial = _fetch_initial_zones()
     if not initial:
         log.error("counterfactual %s: no zones in Firestore; aborting", session_id)
@@ -150,6 +152,7 @@ async def _run(session_id: str) -> None:
 
 
 def _write_summary(session_id: str, patch: dict[str, Any]) -> None:
+    """Merge-write a partial summary dict onto /counterfactual/{session_id}."""
     db().collection("counterfactual").document(session_id).set(patch, merge=True)
 
 
@@ -157,6 +160,7 @@ def _write_summary(session_id: str, patch: dict[str, Any]) -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """FastAPI lifespan context. Cancels every active session task cleanly on shutdown."""
     yield
     # Best-effort cancel on shutdown
     for _sid, task in list(_sessions.items()):
@@ -170,6 +174,7 @@ app = FastAPI(title="pulse-counterfactual", lifespan=lifespan)
 
 @app.get("/health")
 def health() -> dict[str, Any]:
+    """Liveness endpoint; reports active session count."""
     return {
         "status": "ok",
         "service": "pulse-counterfactual",
@@ -183,6 +188,7 @@ def health() -> dict[str, Any]:
 
 @app.post("/start")
 async def start(payload: dict[str, Any]) -> dict[str, Any]:
+    """Begin a new counterfactual session keyed by session_id. Idempotent if already running."""
     session_id = (payload or {}).get("session_id", "").strip()
     if not session_id:
         raise HTTPException(400, "body must include non-empty 'session_id'")
@@ -196,6 +202,7 @@ async def start(payload: dict[str, Any]) -> dict[str, Any]:
 
 @app.post("/stop")
 async def stop(payload: dict[str, Any]) -> dict[str, Any]:
+    """Cancel an in-flight counterfactual session."""
     session_id = (payload or {}).get("session_id", "").strip()
     if not session_id:
         raise HTTPException(400, "body must include non-empty 'session_id'")
@@ -210,6 +217,7 @@ async def stop(payload: dict[str, Any]) -> dict[str, Any]:
 
 @app.get("/status")
 def status(session_id: str | None = None) -> dict[str, Any]:
+    """Return per-session or global active-session state."""
     if session_id:
         task = _sessions.get(session_id)
         running = bool(task and not task.done())

@@ -32,6 +32,7 @@ def subscription_path() -> str:
 
 
 def handle(message: pubsub_v1.subscriber.message.Message) -> None:
+    """Pub/Sub message handler. Routes each event into the in-memory buffer (or direct Firestore write for density deltas), then acks."""
     try:
         event = json.loads(message.data.decode("utf-8"))
         etype = event.get("type", "")
@@ -71,6 +72,7 @@ def handle(message: pubsub_v1.subscriber.message.Message) -> None:
 
 
 def start_subscriber():
+    """Attach a streaming-pull subscriber to the pre-created sensor-events subscription and return its future."""
     sub_path = subscription_path()
     subscriber = pubsub_v1.SubscriberClient()
     future = subscriber.subscribe(sub_path, callback=handle)

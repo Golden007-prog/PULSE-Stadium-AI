@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 
 const ORCH_URL = process.env.ORCHESTRATOR_URL ?? "";
 
+/** Proxy a tick-trigger call to the orchestrator Cloud Run service. */
 export async function GET() {
   if (!ORCH_URL) {
     return NextResponse.json(

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import type { FanProfile } from "@/lib/types";
 
+/** First-launch onboarding carousel; captures seat block + language preference. */
 export function Onboarding({ onDone }: { onDone: (p: FanProfile) => void }) {
   const [name, setName] = useState("Raj");
   const [seat, setSeat] = useState("B-204");

@@ -11,6 +11,7 @@ from src.tools import care_tools
 
 
 def test_dispatch_medical_writes_intervention_with_incident_id() -> None:
+    """Dispatch medical writes intervention with incident id."""
     with patch.object(care_tools, "add_intervention", return_value="iv-med-1") as add_iv:
         result = care_tools.dispatch_medical(
             zone_id="C-12",
@@ -36,6 +37,7 @@ def test_dispatch_medical_writes_intervention_with_incident_id() -> None:
 
 
 def test_dispatch_medical_critical_severity_shortens_eta() -> None:
+    """Dispatch medical critical severity shortens eta."""
     with patch.object(care_tools, "add_intervention", return_value="iv-med-crit"):
         result = care_tools.dispatch_medical(
             zone_id="S-B",

@@ -94,6 +94,7 @@ def request_flow_clearance(
 def register_lost_child(
     name: str, last_seen_zone: str, guardian_contact: str
 ) -> dict[str, Any]:
+    """Create a lost-child incident record in /venues/.../interventions."""
     incident_id = f"lost-{uuid.uuid4().hex[:8]}"
     iid = add_intervention(
         Intervention(

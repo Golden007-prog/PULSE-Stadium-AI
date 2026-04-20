@@ -18,6 +18,7 @@ _ITEMS = [
 
 
 def emit_pos(concessions: list[str], publish: Callable[[dict[str, Any]], None]) -> None:
+    """Emit a single PoS transaction at a randomly-picked concession."""
     if not concessions:
         return
     stall = random.choice(concessions)

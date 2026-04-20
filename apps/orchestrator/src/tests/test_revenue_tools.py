@@ -7,6 +7,7 @@ from src.tools import revenue_tools
 
 
 def test_push_targeted_offer_generates_offer_id_and_records_zones() -> None:
+    """Push targeted offer generates offer id and records zones."""
     with patch.object(revenue_tools, "add_intervention", return_value="iv-rev-1") as add_iv:
         result = revenue_tools.push_targeted_offer(
             zone_ids=["S-B", "S-C"],
@@ -32,6 +33,7 @@ def test_push_targeted_offer_generates_offer_id_and_records_zones() -> None:
 
 
 def test_push_targeted_offer_defaults_target_to_all_when_no_zones() -> None:
+    """Push targeted offer defaults target to all when no zones."""
     with patch.object(revenue_tools, "add_intervention", return_value="iv-all"):
         result = revenue_tools.push_targeted_offer(
             zone_ids=[],
@@ -47,6 +49,7 @@ def test_push_targeted_offer_defaults_target_to_all_when_no_zones() -> None:
 
 
 def test_log_revenue_mitigation_persists_lost_sales_estimate() -> None:
+    """Log revenue mitigation persists lost sales estimate."""
     with patch.object(revenue_tools, "add_intervention", return_value="iv-log-1") as add_iv:
         result = revenue_tools.log_revenue_mitigation(
             estimated_lost_sales_inr=3200,

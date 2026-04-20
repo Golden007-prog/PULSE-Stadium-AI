@@ -10,6 +10,7 @@ interface Props {
   onDismiss: () => void;
 }
 
+/** Single KPI card used for venue density, queues, revenue, and safety metrics. */
 export function MetricsCard({
   waitReductionPct,
   peakReductionPct,

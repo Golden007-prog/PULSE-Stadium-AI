@@ -15,6 +15,7 @@ interface TriggerResp {
   error?: string;
 }
 
+/** Forward a fan concierge query to the orchestrator and stream the reply back. */
 export async function POST(req: Request) {
   if (!ORCH_URL) {
     return NextResponse.json({ error: "ORCHESTRATOR_URL not set" }, { status: 500 });

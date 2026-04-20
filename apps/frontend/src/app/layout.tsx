@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     "Multi-agent AI ops console for M. Chinnaswamy Stadium on IPL final day.",
 };
 
+/** Root HTML layout for the ops console; applies global fonts and CSS. */
 export default function RootLayout({
   children,
 }: {

@@ -4,6 +4,7 @@ import type { MatchState } from "@/lib/types";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
+/** Live match score, over, and striker info pulled from the scripted scenario feed. */
 export function MatchScreen() {
   const { data } = useSWR<MatchState>("/api/match", fetcher, { refreshInterval: 10_000 });
   if (!data) {

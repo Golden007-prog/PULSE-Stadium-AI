@@ -71,6 +71,7 @@ def compute_route(
 
 
 def close_concourse(concourse_id: str, duration_min: int, reason: str) -> dict[str, Any]:
+    """Record a hard concourse closure; the duration is metadata."""
     iid = add_intervention(
         Intervention(
             initiating_agent="flow",
@@ -86,6 +87,7 @@ def close_concourse(concourse_id: str, duration_min: int, reason: str) -> dict[s
 def update_signage(
     screen_id: str, message: str, duration_s: int, reason: str
 ) -> dict[str, Any]:
+    """Push a message to a digital-signage screen and (if the screen names a zone) lightly reduce that zone density."""
     iid = add_intervention(
         Intervention(
             initiating_agent="flow",
@@ -105,6 +107,7 @@ def update_signage(
 def reroute_fans(
     from_zone: str, to_zone: str, expected_count: int, reason: str
 ) -> dict[str, Any]:
+    """Redirect expected_count fans from one zone to another. Auto-reduces the source zone density to 3.2 p/m^2 if it was above threshold."""
     iid = add_intervention(
         Intervention(
             initiating_agent="flow",
@@ -146,6 +149,7 @@ def mark_zone_resolved(zone_id: str, new_density: float, reason: str) -> dict[st
 
 
 def list_all_zones() -> dict[str, Any]:
+    """Return a compact list of every zone with its current density. Used for Flow context-gathering step."""
     zones = list_zones()
     return {
         "ok": True,

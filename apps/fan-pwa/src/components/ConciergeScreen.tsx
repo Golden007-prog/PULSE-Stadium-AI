@@ -10,6 +10,7 @@ import {
 
 const SUGGESTIONS = ["beer?", "nearest restroom?", "where's my seat?", "who's batting?"];
 
+/** Voice-first concierge; captures speech, proxies to the orchestrator, and speaks the reply. */
 export function ConciergeScreen({ fan }: { fan: FanProfile }) {
   const [turns, setTurns] = useState<ChatTurn[]>([
     {

@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 
 const CF_URL = process.env.COUNTERFACTUAL_URL ?? "";
 
+/** Stop the running counterfactual ABS simulation and persist its summary. */
 export async function POST(req: Request) {
   if (!CF_URL) {
     return NextResponse.json(

@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 
 const SIM_URL = process.env.SIMULATOR_URL ?? "";
 
+/** Reset the scripted scenario simulator back to tick zero. */
 export async function POST() {
   if (!SIM_URL) {
     return NextResponse.json(
