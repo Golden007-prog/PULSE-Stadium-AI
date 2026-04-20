@@ -4,11 +4,11 @@ Running list of PULSE service URLs. Updated after every deploy.
 
 | Service | Region | URL | Revision | Last deploy |
 |---|---|---|---|---|
-| pulse-simulator | asia-south1 | https://pulse-simulator-bdyqmr2w3q-el.a.run.app | `pulse-simulator-00001-hhc` | 2026-04-18 12:35 UTC |
-| pulse-orchestrator | asia-south1 | https://pulse-orchestrator-bdyqmr2w3q-el.a.run.app | `pulse-orchestrator-00010-zbv` | 2026-04-18 14:55 UTC |
-| pulse-counterfactual | asia-south1 | https://pulse-counterfactual-524510164011.asia-south1.run.app | `pulse-counterfactual-00001-wfv` | 2026-04-18 14:35 UTC |
-| pulse-frontend | asia-south1 | https://pulse-frontend-524510164011.asia-south1.run.app | `pulse-frontend-00006-6s8` | 2026-04-18 15:45 UTC |
-| pulse-fan-pwa | asia-south1 | https://pulse-fan-pwa-524510164011.asia-south1.run.app | `pulse-fan-pwa-00001-lf5` | 2026-04-18 13:55 UTC |
+| pulse-simulator | asia-south1 | https://pulse-simulator-524510164011.asia-south1.run.app | `pulse-simulator-00002-bgc` | 2026-04-20 17:59 UTC |
+| pulse-orchestrator | asia-south1 | https://pulse-orchestrator-524510164011.asia-south1.run.app | `pulse-orchestrator-00011-52l` | 2026-04-20 18:04 UTC |
+| pulse-counterfactual | asia-south1 | https://pulse-counterfactual-524510164011.asia-south1.run.app | `pulse-counterfactual-00002-wlc` | 2026-04-20 18:06 UTC |
+| pulse-frontend | asia-south1 | https://pulse-frontend-524510164011.asia-south1.run.app | `pulse-frontend-00008-9cw` | 2026-04-20 18:08 UTC |
+| pulse-fan-pwa | asia-south1 | https://pulse-fan-pwa-524510164011.asia-south1.run.app | `pulse-fan-pwa-00003-4r9` | 2026-04-20 18:13 UTC |
 | pulse-perception | asia-south1 | _deferred post-hackathon_ | — | — |
 
 ## Cross-cutting notes
