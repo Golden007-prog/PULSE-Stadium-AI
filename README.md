@@ -1,6 +1,6 @@
 # PULSE — The Self-Aware Stadium
 
-<img width="3437" height="1162" alt="image" src="https://github.com/user-attachments/assets/178665fa-7a66-4b09-9329-2c27101c2af0" />
+<img width="1788" height="874" alt="image" src="https://github.com/user-attachments/assets/ac7473b6-51bc-48ae-9b14-45e4cb36f7f3" />
 
 
 > A multi-agent AI "nervous system" for large-scale sporting venues. Five live Cloud Run services, a counterfactual digital twin, an installable fan PWA — shipped solo in 48 hours on Google Cloud.
