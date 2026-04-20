@@ -2,20 +2,23 @@
 
 <img width="1788" height="874" alt="image" src="https://github.com/user-attachments/assets/ac7473b6-51bc-48ae-9b14-45e4cb36f7f3" />
 
+> **Challenge brief (Virtual: PromptWars — Physical Event Experience):**
+> *Design a solution that improves the physical event experience for attendees at large-scale sporting venues. The system should address challenges such as **crowd movement**, **waiting times**, and **real-time coordination**, while ensuring a **seamless and enjoyable** experience.*
 
-> A multi-agent AI "nervous system" for large-scale sporting venues. Five live Cloud Run services, a counterfactual digital twin, an installable fan PWA — shipped solo in 48 hours on Google Cloud.
+**PULSE is the solution.** A multi-agent AI "nervous system" for large-scale sporting venues — five live Cloud Run services, a counterfactual digital twin, an installable fan PWA — shipped solo in 48 hours on **Google Antigravity (Kiro IDE)** with **Google Cloud** and **Gemini 2.5**.
 
 - **Live demo (ops console):** https://pulse-frontend-524510164011.asia-south1.run.app
 - **Fan PWA:** https://pulse-fan-pwa-524510164011.asia-south1.run.app
 - **Watch the 60-second demo:** _Loom link TBA — see [docs/loom-script.md](docs/loom-script.md)_
 - **Competition:** Virtual: PromptWars — *Physical Event Experience* challenge · ADK + Gemini + Cloud Run
 - **GCP project:** `pulse-stadium-ai` · **Region:** `asia-south1`
+- **Repo hygiene:** single `main` branch · 412 KB · MIT · [CHANGELOG.md](CHANGELOG.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) · [SECURITY.md](SECURITY.md)
 
 ---
 
-## Challenge vertical — Physical Event Experience
+## Chosen vertical — Physical Event Experience
 
-PULSE targets the **"Physical Event Experience"** challenge vertical: *design a solution that improves the physical event experience for attendees at large-scale sporting venues. The system should address challenges such as **crowd movement**, **waiting times**, and **real-time coordination**, while ensuring a **seamless and enjoyable** experience.*
+PULSE addresses the four keywords of the **Physical Event Experience** brief with four dedicated specialist agents:
 
 Each of the four keywords maps to a concrete agent in PULSE:
 
@@ -216,7 +219,7 @@ Spelled out so the reviewer isn't guessing:
 
 ## Credits + references
 
-Built solo by **Oikantik Basu** ([@Golden007-prog](https://github.com/Golden007-prog)) across Antigravity (Kiro IDE), Claude Code, and the Google Cloud MCP servers. The ADK Nov 2025 developer-blog post that uses the stadium as its motivating metaphor is the single most important primary reference — see [REFERENCES.md](REFERENCES.md) for the full academic + industry list (Allianz Arena MAS, Sochi Olympic Park, Wagner & Agrawal concert-venue ABS, Itaewon, Kanjuruhan, and the 2025 concert-venue NetLogo baseline we explicitly advance on).
+Built solo by **Oikantik Basu** ([@Golden007-prog](https://github.com/Golden007-prog)) end-to-end in Google Antigravity (Kiro IDE) with the Google Cloud MCP servers. The ADK Nov 2025 developer-blog post that uses the stadium as its motivating metaphor is the single most important primary reference — see [REFERENCES.md](REFERENCES.md) for the full academic + industry list (Allianz Arena MAS, Sochi Olympic Park, Wagner & Agrawal concert-venue ABS, Itaewon, Kanjuruhan, and the 2025 concert-venue NetLogo baseline we explicitly advance on).
 
 ## Quick start (local dev)
 

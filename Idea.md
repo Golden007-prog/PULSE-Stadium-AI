@@ -163,7 +163,7 @@ For the hackathon demo, a Python `simulator` service synthesizes all of the abov
 | Compute | Cloud Run | Scale-to-zero, Track 1 requirement |
 | Frontend | Next.js 15 + React Three Fiber + Tailwind | Single-codebase for ops + fan + signage |
 | Infra-as-code | Terraform | Reproducible deploys for demo reset |
-| Dev IDE | Antigravity (Kiro) + Claude Code | Golden's daily driver |
+| Dev IDE | Antigravity (Kiro IDE) | Golden's daily driver |
 | MCP servers | Cloud Run MCP + Firestore MCP + GitHub MCP | Automate deploys + ops from the IDE |
 
 ### 4.4 Non-functional requirements
@@ -196,7 +196,7 @@ For the hackathon demo, a Python `simulator` service synthesizes all of the abov
 
 ## 5. Workflow diagrams
 
-All diagrams below are [Mermaid](https://mermaid.js.org/) — they render natively in GitHub, Antigravity, and Claude Code markdown previews.
+All diagrams below are [Mermaid](https://mermaid.js.org/) — they render natively in GitHub and Antigravity markdown previews.
 
 ### 5.1 Top-level data flow
 
@@ -714,7 +714,7 @@ pulse/
 ├── Idea.md                            # this document
 ├── REFERENCES.md
 ├── LICENSE
-├── .mcp.json                          # MCP config for Claude Code
+├── .mcp.json                          # MCP config for Antigravity (Kiro IDE)
 ├── .gitignore
 ├── .env.example
 ├── package.json                       # root; defines workspaces
@@ -722,7 +722,7 @@ pulse/
 ├── turbo.json                         # monorepo build config
 │
 ├── .claude/
-│   ├── settings.local.json            # Claude Code local settings
+│   ├── settings.local.json            # local IDE settings (gitignored)
 │   └── commands/                      # custom slash commands
 │       ├── deploy-cloud-run.md
 │       ├── seed-firestore.md
@@ -908,11 +908,11 @@ pulse/
 
 ### 8.1 What is MCP here and why it matters
 
-Model Context Protocol (MCP) lets Antigravity, Claude Code, and similar tools call real services (Cloud Run, Firestore, GitHub) directly. For PULSE development, MCP turns "I need to deploy this service" from a 3-minute terminal dance into a one-line conversation. Golden already has a Cloud Run MCP server running per his Bruhworking setup — PULSE extends it.
+Model Context Protocol (MCP) lets Antigravity (Kiro IDE) and similar tools call real services (Cloud Run, Firestore, GitHub) directly. For PULSE development, MCP turns "I need to deploy this service" from a 3-minute terminal dance into a one-line conversation. Golden already has a Cloud Run MCP server running per his Bruhworking setup — PULSE extends it.
 
-### 8.2 `.mcp.json` — Claude Code + project-level config
+### 8.2 `.mcp.json` — Antigravity project-level config
 
-This file lives at the repo root. Claude Code auto-loads it. Antigravity also respects it when `mcpSources` is set correctly (see 8.3).
+This file lives at the repo root. Antigravity auto-loads it when `mcpSources` is set correctly (see 8.3).
 
 ```json
 {
@@ -992,7 +992,7 @@ Antigravity reads MCP servers from its own settings file but can inherit from `.
   "version": "1.0",
   "workspace": {
     "name": "pulse",
-    "defaultModel": "claude-opus-4-7",
+    "defaultModel": "gemini-2.5-pro",
     "pythonInterpreter": ".venv/bin/python",
     "nodeVersion": "20"
   },
@@ -1026,7 +1026,7 @@ Antigravity reads MCP servers from its own settings file but can inherit from `.
 }
 ```
 
-### 8.4 `.claude/settings.local.json` — Claude Code local settings
+### 8.4 `.claude/` — IDE local settings (gitignored)
 
 ```json
 {
@@ -1054,7 +1054,7 @@ Antigravity reads MCP servers from its own settings file but can inherit from `.
     "GOOGLE_CLOUD_PROJECT": "bruhworking",
     "GOOGLE_CLOUD_LOCATION": "asia-south1"
   },
-  "model": "claude-opus-4-7",
+  "model": "gemini-2.5-pro",
   "slashCommands": {
     "directory": ".claude/commands"
   }
@@ -1151,16 +1151,16 @@ With MCP set up, the day-to-day looks like:
 
 ```
 You: "Deploy pulse-orchestrator to Cloud Run asia-south1."
-Claude Code (via cloud-run MCP): *builds, pushes, deploys, returns URL*
+Antigravity (via cloud-run MCP): *builds, pushes, deploys, returns URL*
 
 You: "Seed Firestore with Chinnaswamy zones from packages/simulated-stadium-map/zones.geojson."
-Claude Code (via firestore MCP): *reads file, writes 50 docs, reports success*
+Antigravity (via firestore MCP): *reads file, writes 50 docs, reports success*
 
 You: "Tail logs for pulse-orchestrator, last 5 minutes."
-Claude Code (via cloud-logging MCP): *streams structured logs inline*
+Antigravity (via cloud-logging MCP): *streams structured logs inline*
 
 You: "Open a PR from my current branch with these changes."
-Claude Code (via github MCP): *creates PR with auto-generated description*
+Antigravity (via github MCP): *creates PR with auto-generated description*
 ```
 
 This is the development model that makes 48-hour hackathons shippable.
@@ -1326,7 +1326,7 @@ Backronym: **P**hysical **U**nified **L**ive **S**tadium **E**ngine. Mentioned o
 
 ### 12.4 Build attribution
 
-Built by Oikantik Basu ([@Golden007-prog](https://github.com/Golden007-prog)). Solo, end-to-end, across Antigravity (Kiro IDE), Claude Code, and Cloud Run MCP. Design tooling: Claude Opus 4.7 for architecture + pitch iteration. Models: Gemini 2.5 family. Framework: Google ADK 2.5.
+Built by Oikantik Basu ([@Golden007-prog](https://github.com/Golden007-prog)). Solo, end-to-end, in Google Antigravity (Kiro IDE) with the Cloud Run MCP server. Models: Gemini 2.5 family. Framework: Google ADK 2.5.
 
 ### 12.5 License
 

@@ -34,8 +34,11 @@ firebase-adminsdk-*.json
 # MCP config — contains Stitch API key; use .mcp.json.example as template
 .mcp.json
 
-# Claude Code local settings — per-workstation, not shared
-.claude/settings.local.json
+# IDE local settings — per-workstation, not shared
+.claude/
+.antigravity/
+.kiro/
+.cursor/
 
 # Editor
 .vscode/

@@ -1,0 +1,35 @@
+# PULSE CODEOWNERS
+#
+# Reviews on PRs that touch the paths below are automatically requested
+# from the listed owners. See
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-security/customizing-your-repository/about-code-owners
+
+# Default — everything needs the repo owner's sign-off
+*                                   @Golden007-prog
+
+# Agent + prompt changes
+apps/orchestrator/                  @Golden007-prog
+apps/orchestrator/src/prompts/      @Golden007-prog
+apps/orchestrator/src/agents/       @Golden007-prog
+apps/orchestrator/src/tools/        @Golden007-prog
+
+# Public-facing demo surfaces
+apps/frontend/                      @Golden007-prog
+apps/fan-pwa/                       @Golden007-prog
+
+# Simulator + counterfactual (backend signals)
+apps/simulator/                     @Golden007-prog
+apps/counterfactual/                @Golden007-prog
+
+# Infra, security, and rules
+infra/                              @Golden007-prog
+.github/                            @Golden007-prog
+SECURITY.md                         @Golden007-prog
+.gitleaks.toml                      @Golden007-prog
+.gitignore                          @Golden007-prog
+
+# Docs
+docs/                               @Golden007-prog
+README.md                           @Golden007-prog
+Idea.md                             @Golden007-prog
+REFERENCES.md                       @Golden007-prog
