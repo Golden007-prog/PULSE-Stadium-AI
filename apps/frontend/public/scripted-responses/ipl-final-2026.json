@@ -1,0 +1,219 @@
+{
+  "name": "IPL Final 2026 — 90-second deterministic demo",
+  "venue": "chinnaswamy",
+  "duration_ms": 90000,
+  "initial_zones": {
+    "G-1": 1.1, "G-2": 1.3, "G-3": 1.4, "G-4": 1.2,
+    "S-A": 1.8, "S-B": 2.1, "S-C": 1.7, "S-D": 1.5,
+    "C-01": 1.6, "C-12": 1.9,
+    "F-E": 0.9, "F-W": 0.8
+  },
+  "final_metrics": {
+    "wait_reduction_pct": 47,
+    "peak_reduction_pct": 38,
+    "incidents_prevented": 7,
+    "revenue_lift_pct": 18,
+    "medical_response_time_s": 195
+  },
+  "events": [
+    {
+      "at_ms": 2000,
+      "type": "zone_density",
+      "data": { "zone_id": "G-3", "density": 2.4, "note": "Gate 3 entry activity climbing" }
+    },
+    {
+      "at_ms": 8000,
+      "type": "zone_density",
+      "data": { "zone_id": "G-3", "density": 3.8, "note": "Gate 3 throughput dropping behind arrivals" }
+    },
+    {
+      "at_ms": 12000,
+      "type": "zone_density",
+      "data": { "zone_id": "G-3", "density": 5.2, "note": "Gate 3 entry bottleneck forming — predicted crush risk in 12 minutes" }
+    },
+    {
+      "at_ms": 16000,
+      "type": "agent_trace",
+      "data": {
+        "tag": "tick",
+        "chain": ["orchestrator", "flow"],
+        "tokens_used": 8990,
+        "cost_usd": 0.01251,
+        "duration_ms": 9200,
+        "summary": "Flow rerouted 400 fans from G-3 to G-4 with signage update. Projected density drop on G-3 to ~3.2 p/m² by T+6min."
+      }
+    },
+    {
+      "at_ms": 17000,
+      "type": "intervention",
+      "data": {
+        "initiating_agent": "flow",
+        "action": "update_signage",
+        "target": "sign-G3-A",
+        "reason": "Gate 3 at 5.2 p/m² — divert arrivals to Gate 4 until further notice."
+      }
+    },
+    {
+      "at_ms": 18500,
+      "type": "intervention",
+      "data": {
+        "initiating_agent": "flow",
+        "action": "reroute_fans",
+        "target": "G-3->G-4",
+        "reason": "G-3 at 5.2 p/m²; redirect 400 fans to G-4 to bring G-3 to 3.2 by T+6min."
+      }
+    },
+    {
+      "at_ms": 21000,
+      "type": "zone_density",
+      "data": { "zone_id": "G-3", "density": 3.2, "note": "flow reroute successful — density diffusing to G-4 and C-01" }
+    },
+    {
+      "at_ms": 22000,
+      "type": "zone_density",
+      "data": { "zone_id": "G-4", "density": 2.6, "note": "receiving reroute from G-3" }
+    },
+    {
+      "at_ms": 35000,
+      "type": "fan_query",
+      "data": {
+        "fan_id": "raj-b-204",
+        "seat": "B-204",
+        "query": "beer?",
+        "modality": "voice"
+      }
+    },
+    {
+      "at_ms": 38500,
+      "type": "agent_trace",
+      "data": {
+        "tag": "fan_query",
+        "chain": ["orchestrator", "concierge"],
+        "tokens_used": 5162,
+        "cost_usd": 0.00700,
+        "duration_ms": 3200,
+        "inputs": { "query": "beer?", "fan_id": "raj-b-204", "seat": "B-204" },
+        "summary": "Gate 4 Bar, 90-second queue. Kohli's on strike, you'll make it back for the over. Show me the way →"
+      }
+    },
+    {
+      "at_ms": 50000,
+      "type": "zone_density",
+      "data": { "zone_id": "C-12", "density": 2.8, "note": "Concourse South foot traffic elevated" }
+    },
+    {
+      "at_ms": 55000,
+      "type": "anomaly",
+      "data": {
+        "zone_id": "C-12",
+        "anomaly_type": "fall",
+        "severity": "high",
+        "confidence": 0.93,
+        "note": "Vision flagged: person fallen at Concourse South"
+      }
+    },
+    {
+      "at_ms": 58000,
+      "type": "intervention",
+      "data": {
+        "initiating_agent": "care",
+        "action": "dispatch_medical",
+        "target": "C-12",
+        "reason": "Person fallen at Concourse South (C-12) — severity high."
+      }
+    },
+    {
+      "at_ms": 59500,
+      "type": "intervention",
+      "data": {
+        "initiating_agent": "care",
+        "action": "request_flow_clearance",
+        "target": "C-12",
+        "reason": "Ambulance path to G-4 — close C-12 for 4 minutes."
+      }
+    },
+    {
+      "at_ms": 60500,
+      "type": "intervention",
+      "data": {
+        "initiating_agent": "care",
+        "action": "route_ambulance",
+        "target": "C-12->G-4",
+        "reason": "Medical unit M-47 dispatched; path via Concourse South to Gate 4."
+      }
+    },
+    {
+      "at_ms": 63000,
+      "type": "intervention",
+      "data": {
+        "initiating_agent": "flow",
+        "action": "close_concourse",
+        "target": "C-12",
+        "reason": "Closing Concourse South for 4 minutes to clear ambulance path for medical incident at C-12."
+      }
+    },
+    {
+      "at_ms": 65000,
+      "type": "intervention",
+      "data": {
+        "initiating_agent": "flow",
+        "action": "reroute_fans",
+        "target": "C-12->C-01",
+        "reason": "Rerouting 240 affected fans from Concourse South to Concourse North via Stand B."
+      }
+    },
+    {
+      "at_ms": 67500,
+      "type": "intervention",
+      "data": {
+        "initiating_agent": "revenue",
+        "action": "push_targeted_offer",
+        "target": "S-B,S-C",
+        "reason": "₹50 off beer coupon to ~240 fans displaced by Concourse South closure."
+      }
+    },
+    {
+      "at_ms": 69000,
+      "type": "intervention",
+      "data": {
+        "initiating_agent": "revenue",
+        "action": "log_mitigation",
+        "target": "offer-demo-cf",
+        "reason": "Estimated ₹3,200 in lost beer sales mitigated by targeted coupon push."
+      }
+    },
+    {
+      "at_ms": 70000,
+      "type": "agent_trace",
+      "data": {
+        "tag": "negotiation",
+        "chain": ["orchestrator", "care", "flow", "revenue"],
+        "tokens_used": 5085,
+        "cost_usd": 0.00774,
+        "duration_ms": 12000,
+        "summary": "Medical unit dispatched to C-12 for fall (severity high). Flow closed C-12 for 4 minutes and rerouted 240 fans to C-01. Revenue pushed a ₹50-off beer coupon to ~240 displaced fans; ₹3,200 estimated lost sales mitigated."
+      }
+    },
+    {
+      "at_ms": 75000,
+      "type": "zone_density",
+      "data": { "zone_id": "C-12", "density": 0.5, "note": "closed for medical evac" }
+    },
+    {
+      "at_ms": 76000,
+      "type": "zone_density",
+      "data": { "zone_id": "C-01", "density": 2.6, "note": "receiving reroute from C-12" }
+    },
+    {
+      "at_ms": 85000,
+      "type": "finale",
+      "data": {
+        "wait_reduction_pct": 47,
+        "peak_reduction_pct": 38,
+        "incidents_prevented": 7,
+        "revenue_lift_pct": 18,
+        "medical_response_time_s": 195
+      }
+    }
+  ]
+}

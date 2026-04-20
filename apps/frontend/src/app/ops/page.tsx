@@ -1,6 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import useSWR from "swr";
 import { MatchTicker } from "@/components/MatchTicker";
 import { AgentRoster } from "@/components/AgentRoster";
@@ -9,7 +10,15 @@ import { PlaybackControls } from "@/components/PlaybackControls";
 import { InterventionsStrip } from "@/components/InterventionCard";
 import { CfToggle } from "@/components/CfToggle";
 import { DeltaMetrics } from "@/components/DeltaMetrics";
+import { AutoPlayBanner } from "@/components/AutoPlayBanner";
+import { MetricsCard } from "@/components/MetricsCard";
 import { useCollection, useDoc } from "@/lib/use-firestore";
+import {
+  loadTimeline,
+  schedule,
+  startDemo,
+  type ScriptedTimeline,
+} from "@/lib/autoplay";
 import type {
   AgentTrace,
   CfSummary,
@@ -30,11 +39,25 @@ const Twin3D = dynamic(() => import("@/components/Twin3D"), {
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 type OrchResp = { state?: OrchestratorState } & Record<string, unknown>;
 
-export default function OpsPage() {
-  // ── Reality state (live Firestore) ─────────────────────────────
-  const { data: realityZones } = useCollection<Zone>(
-    "venues/chinnaswamy/zones"
+export default function OpsPageWrap() {
+  return (
+    <Suspense fallback={<div className="h-screen w-screen bg-surface-dim" />}>
+      <OpsPage />
+    </Suspense>
   );
+}
+
+// Module-scoped autoplay handle so unmount can cancel pending timers.
+let _autoplayHandle: { cancel: () => void } | null = null;
+
+function OpsPage() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const autoplayFlag = params.get("autoplay") === "true";
+  const runParam = params.get("run");
+
+  // ── Reality state (live Firestore) ─────────────────────────────
+  const { data: realityZones } = useCollection<Zone>("venues/chinnaswamy/zones");
   const { data: interventions } = useCollection<Intervention>(
     "venues/chinnaswamy/interventions",
     { orderBy: ["created_at", "desc"], limit: 20 }
@@ -49,7 +72,7 @@ export default function OpsPage() {
   });
 
   // ── Counterfactual session ────────────────────────────────────
-  const [cfSessionId, setCfSessionId] = useState<string | null>(null);
+  const [cfSessionId, setCfSessionId] = useState<string | null>(runParam);
   const { data: cfSummary } = useDoc<CfSummary>(
     cfSessionId ? `counterfactual/${cfSessionId}` : null
   );
@@ -65,6 +88,62 @@ export default function OpsPage() {
     }));
   }, [cfSummary, realityZones]);
 
+  // ── Auto-play scheduler ───────────────────────────────────────
+  const [timeline, setTimeline] = useState<ScriptedTimeline | null>(null);
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const [autoplayRunning, setAutoplayRunning] = useState(false);
+  const [showMetrics, setShowMetrics] = useState(false);
+
+  useEffect(() => {
+    if (!autoplayFlag || !runParam) return;
+    let cancelled = false;
+
+    (async () => {
+      const tl = await loadTimeline("/scripted-responses/ipl-final-2026.json");
+      if (cancelled) return;
+      setTimeline(tl);
+      setAutoplayRunning(true);
+      setElapsedMs(0);
+      _autoplayHandle?.cancel();
+      _autoplayHandle = schedule(
+        tl,
+        runParam,
+        (e) => setElapsedMs(e),
+        undefined,
+        () => {
+          setAutoplayRunning(false);
+          setShowMetrics(true);
+        }
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+      _autoplayHandle?.cancel();
+      _autoplayHandle = null;
+    };
+  }, [autoplayFlag, runParam]);
+
+  async function resetDemo() {
+    _autoplayHandle?.cancel();
+    const tl =
+      timeline ??
+      (await loadTimeline("/scripted-responses/ipl-final-2026.json"));
+    const { run_id } = await startDemo(tl);
+    router.push(`/ops?autoplay=true&run=${encodeURIComponent(run_id)}`);
+  }
+
+  function skipToEnd() {
+    _autoplayHandle?.cancel();
+    setAutoplayRunning(false);
+    setShowMetrics(true);
+  }
+
+  function dismissMetrics() {
+    setShowMetrics(false);
+    router.push("/ops");
+  }
+
   const orch: OrchestratorState = o?.state ?? {
     running: false,
     ticks: 0,
@@ -79,9 +158,17 @@ export default function OpsPage() {
     alerts_seen: 0,
   };
 
+  const finalMetrics = timeline?.final_metrics ?? {
+    wait_reduction_pct: 47,
+    peak_reduction_pct: 38,
+    incidents_prevented: 7,
+    revenue_lift_pct: 18,
+    medical_response_time_s: 195,
+  };
+
   return (
     <div
-      className="h-screen w-screen overflow-hidden grid bg-surface-dim text-ink"
+      className="h-screen w-screen overflow-hidden grid bg-surface-dim text-ink relative"
       style={{ gridTemplateRows: "56px 1fr 48px" }}
     >
       <MatchTicker attendance={orch.attendance_counted ?? 0} />
@@ -96,11 +183,7 @@ export default function OpsPage() {
           totalInvocations={orch.total_invocations ?? 0}
         />
 
-        {/* Centre stack: twin(s) + delta strip */}
-        <div
-          className="relative bg-surface-dim flex flex-col overflow-hidden"
-        >
-          {/* Top-right HUD: CF toggle + metadata */}
+        <div className="relative bg-surface-dim flex flex-col overflow-hidden">
           <div className="absolute top-3 right-3 z-10 flex items-center gap-2 pointer-events-auto">
             <div className="mono text-[10px] uppercase tracking-wider text-ink-fade pointer-events-none">
               {realityZones.length} zones · {interventions.length} interventions
@@ -114,7 +197,6 @@ export default function OpsPage() {
             />
           </div>
 
-          {/* Twin row */}
           <div className="flex-1 min-h-0 flex">
             <div className="flex-1 relative">
               <TwinLabel variant="reality" />
@@ -149,7 +231,6 @@ export default function OpsPage() {
             )}
           </div>
 
-          {/* Delta metrics strip — only when CF is on */}
           {cfActive && (
             <DeltaMetrics
               reality={realityZones}
@@ -168,6 +249,27 @@ export default function OpsPage() {
         budgetPaused={orch.budget_paused ?? false}
         totalUsd={orch.total_usd ?? 0}
       />
+
+      {autoplayFlag && timeline && (
+        <AutoPlayBanner
+          elapsedMs={elapsedMs}
+          totalMs={timeline.duration_ms}
+          running={autoplayRunning}
+          onReset={resetDemo}
+          onSkip={skipToEnd}
+        />
+      )}
+
+      {showMetrics && (
+        <MetricsCard
+          waitReductionPct={finalMetrics.wait_reduction_pct}
+          peakReductionPct={finalMetrics.peak_reduction_pct}
+          incidentsPrevented={finalMetrics.incidents_prevented}
+          revenueLiftPct={finalMetrics.revenue_lift_pct}
+          medicalResponseS={finalMetrics.medical_response_time_s}
+          onDismiss={dismissMetrics}
+        />
+      )}
     </div>
   );
 }
