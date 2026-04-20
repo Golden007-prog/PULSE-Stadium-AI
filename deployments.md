@@ -8,7 +8,7 @@ Running list of PULSE service URLs. Updated after every deploy.
 | pulse-orchestrator | asia-south1 | https://pulse-orchestrator-bdyqmr2w3q-el.a.run.app | `pulse-orchestrator-00004-b84` | 2026-04-18 13:20 UTC |
 | pulse-frontend | asia-south1 | https://pulse-frontend-524510164011.asia-south1.run.app | `pulse-frontend-00001-fq5` | 2026-04-18 13:35 UTC |
 | pulse-fan-pwa | asia-south1 | https://pulse-fan-pwa-524510164011.asia-south1.run.app | `pulse-fan-pwa-00001-lf5` | 2026-04-18 13:55 UTC |
-| pulse-counterfactual | asia-south1 | _pending phase 5_ | — | — |
+| pulse-counterfactual | asia-south1 | https://pulse-counterfactual-524510164011.asia-south1.run.app | `pulse-counterfactual-00001-wfv` | 2026-04-18 14:35 UTC |
 | pulse-perception | asia-south1 | _deferred post-hackathon_ | — | — |
 
 ## Notes
@@ -46,6 +46,12 @@ Running list of PULSE service URLs. Updated after every deploy.
 - Voice input: browser Web Speech API (`SpeechRecognition` on Chrome/Edge/Android). Voice output: `speechSynthesis`. **Gemini Live WebSocket intentionally skipped** — plan called it "finicky from Cloud Run"; phase 6 can revisit.
 - `POST /api/concierge` proxies to `pulse-orchestrator/trigger` with a fan-query prompt. End-to-end "beer?" confirmed: chain `orchestrator → concierge → queue`, 3.8k tokens, $0.005, 12s.
 - Match state is a frozen 2024 IPL final snapshot at `/api/match`. CricAPI polling via Cloud Scheduler → Firestore deferred to phase 6.
+
+## Counterfactual
+
+- IAM-gated · min=0 max=2 · 512 Mi / 1 vCPU · Gemini-free.
+- `POST /start {session_id}` snapshots current reality zones, then ticks a density-only ABS every 5 s (max 120 ticks = 10 min) with no intervention. Writes per-tick state to `/counterfactual/{id}/states/{tick}` and a rolling summary + metrics to `/counterfactual/{id}`.
+- Adjacency + inflow model in [abs_engine.py](apps/counterfactual/src/abs_engine.py); east-side bottleneck (G-3 → S-B → C-12) primed to keep worsening so the split-screen divergence is visible.
 
 ## Orchestrator
 
