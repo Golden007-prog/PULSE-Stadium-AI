@@ -1,18 +1,18 @@
 # syntax=docker/dockerfile:1.7
 
-FROM node:20-slim AS deps
+FROM node:25-slim AS deps
 WORKDIR /app
 COPY package.json ./
 RUN npm install --no-audit --no-fund
 
-FROM node:20-slim AS builder
+FROM node:25-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
-FROM node:20-slim AS runner
+FROM node:25-slim AS runner
 WORKDIR /app
 ENV NODE_ENV=production \
     PORT=8080 \
