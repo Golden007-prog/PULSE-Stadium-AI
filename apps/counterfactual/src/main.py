@@ -21,7 +21,7 @@ import asyncio
 import logging
 import os
 import time
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
@@ -159,12 +159,10 @@ def _write_summary(session_id: str, patch: dict[str, Any]) -> None:
 async def lifespan(app: FastAPI):
     yield
     # Best-effort cancel on shutdown
-    for sid, task in list(_sessions.items()):
+    for _sid, task in list(_sessions.items()):
         task.cancel()
-        try:
+        with suppress(Exception):
             await task
-        except Exception:
-            pass
 
 
 app = FastAPI(title="pulse-counterfactual", lifespan=lifespan)
@@ -205,10 +203,8 @@ async def stop(payload: dict[str, Any]) -> dict[str, Any]:
     if not task:
         return {"status": "not_found", "session_id": session_id}
     task.cancel()
-    try:
+    with suppress(Exception):
         await task
-    except Exception:
-        pass
     return {"status": "stopped", "session_id": session_id}
 
 

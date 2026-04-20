@@ -11,6 +11,15 @@ The `main` branch is the only supported surface. We push to `main` for every cha
 | `main` (HEAD) | ✅ |
 | any prior commit | ❌ |
 
+## Related documents
+
+- **[docs/threat-model.md](docs/threat-model.md)** — STRIDE walkthrough, trust boundaries, supply-chain hygiene, incident response.
+- **[docs/privacy.md](docs/privacy.md)** — PII posture, event-scoped UUIDs, no-biometrics-on-the-wire.
+- **[docs/security-scan.md](docs/security-scan.md)** — Bandit + gitleaks + detect-secrets + history scan (all clean at medium+).
+- **[infra/firestore.rules](infra/firestore.rules)** — read-only client access on three ops surfaces; all writes blocked.
+- **[.gitleaks.toml](.gitleaks.toml)** — secret-scan allowlist (Firebase Web API key only).
+- **[.github/workflows/ci.yml](.github/workflows/ci.yml)** — CI-time gitleaks + Bandit + detect-secrets checks on every push.
+
 ## What's in scope
 
 Any of the following qualifies as a security issue we will act on:

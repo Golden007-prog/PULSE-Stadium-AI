@@ -17,9 +17,8 @@ the intervened reality.
 from __future__ import annotations
 
 import random
+from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Iterable
-
 
 # Adjacency graph for the 12 Chinnaswamy zones — determines where
 # overflow bleeds from a saturated zone. Curated by inspecting
@@ -114,7 +113,7 @@ class ABSEngine:
     tick: int = 0
 
     @classmethod
-    def from_initial(cls, initial: Iterable[tuple[str, float]]) -> "ABSEngine":
+    def from_initial(cls, initial: Iterable[tuple[str, float]]) -> ABSEngine:
         return cls(zones={zid: max(0.0, float(d)) for zid, d in initial})
 
     def step(self, dt_s: int = 5) -> EngineStep:

@@ -17,9 +17,8 @@ import asyncio
 import json
 import logging
 import os
-import time
 import uuid
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
@@ -263,17 +262,13 @@ async def lifespan(app: FastAPI):
         state["running"] = False
         if _tick_task and not _tick_task.done():
             _tick_task.cancel()
-            try:
+            with suppress(asyncio.CancelledError):
                 await _tick_task
-            except asyncio.CancelledError:
-                pass
         if _sub_future:
             _sub_future.cancel()
         if _subscriber:
-            try:
+            with suppress(Exception):
                 _subscriber.close()
-            except Exception:
-                pass
 
 
 app = FastAPI(title="pulse-orchestrator", lifespan=lifespan)

@@ -8,14 +8,25 @@
 - **Live demo (ops console):** https://pulse-frontend-524510164011.asia-south1.run.app
 - **Fan PWA:** https://pulse-fan-pwa-524510164011.asia-south1.run.app
 - **Watch the 60-second demo:** _Loom link TBA — see [docs/loom-script.md](docs/loom-script.md)_
-- **Hackathon:** Gen AI Academy APAC Edition · Track 1 (ADK + Gemini + Cloud Run)
+- **Competition:** Virtual: PromptWars — *Physical Event Experience* challenge · ADK + Gemini + Cloud Run
 - **GCP project:** `pulse-stadium-ai` · **Region:** `asia-south1`
 
 ---
 
-## Chosen vertical
+## Challenge vertical — Physical Event Experience
 
-**Large-scale sporting venues — fan experience at scale.** The system targets the 40,000-seat Chinnaswamy Stadium during an IPL final as its canonical operating point. See [Idea.md §2](Idea.md) for the decoding of the hackathon brief (crowd movement · waiting times · real-time coordination · seamless + enjoyable) into PULSE's eight-agent architecture, and [REFERENCES.md](REFERENCES.md) for the academic + industry priors (Allianz Arena MAS, Sochi Olympic Park, Wagner & Agrawal concert-venue ABS, Itaewon, Kanjuruhan).
+PULSE targets the **"Physical Event Experience"** challenge vertical: *design a solution that improves the physical event experience for attendees at large-scale sporting venues. The system should address challenges such as **crowd movement**, **waiting times**, and **real-time coordination**, while ensuring a **seamless and enjoyable** experience.*
+
+Each of the four keywords maps to a concrete agent in PULSE:
+
+| Challenge prompt keyword | PULSE component | What it does |
+|---|---|---|
+| **Crowd movement** | **Flow Agent** (Gemini 2.5 Flash) | Predicts density 10–15 min ahead; reroutes fans and closes concourses before crush risk forms. |
+| **Waiting times** | **Queue Agent** (Gemini 2.5 Flash) | Forecasts F&B + restroom waits, nudges fans to lower-wait alternatives, reallocates staff. |
+| **Real-time coordination** | **Orchestrator + Care + Revenue** (Gemini 2.5 Pro + Flash) | Replaces 15 WhatsApp groups with a single ADK `AgentTool` chain that executes `care → flow → revenue` negotiations in one invocation and writes the visible trace to Firestore in under 500 ms. |
+| **Seamless + enjoyable** | **Concierge Agent** (Gemini 2.5 Flash) + fan PWA | Voice-native, zero-install per-fan assistant that grounds every reply in live match state (*"Kohli's on strike, you'll make it back for the over"*). |
+
+The canonical operating point is the 40,000-seat **M. Chinnaswamy Stadium** during the **2026 IPL final (RCB v CSK)**. The scripted demo plays an IPL timeline with a density spike, a fan voice query, and a medical fall with a three-agent negotiated response. See [Idea.md §2](Idea.md) for the full brief decoding, [docs/demo-script.md](docs/demo-script.md) for the 90-second timeline, and [REFERENCES.md](REFERENCES.md) for academic priors (Allianz Arena MAS, Sochi Olympic Park, Wagner & Agrawal concert-venue ABS) and the real crowd-crush incidents (Itaewon 2022, Kanjuruhan 2022, Hillsborough 1989) that motivate the safety floor.
 
 ---
 
@@ -115,14 +126,66 @@ Full per-service config (SA, scaling, env, routes) in [deployments.md](deploymen
 
 ## How PULSE scores on the evaluation rubric
 
-| Criterion | Evidence |
-|---|---|
-| **Code Quality** | Ruff + mypy strict on Python ([apps/orchestrator/pyproject.toml](apps/orchestrator/pyproject.toml), [ruff/mypy in CI](.github/workflows/ci.yml)). Line-length 100, `target-version=py312`. ESLint + Prettier + `tsc --noEmit` on TypeScript (Next.js 15 projects). Every agent tool has typed Python signatures; `Intervention`, `Zone`, `AgentTrace` are Pydantic models ([state/firestore_client.py](apps/orchestrator/src/state/firestore_client.py)). Tool I/O follows the `{ok, data, error}` envelope per [Idea.md §6.5](Idea.md). `[CONTRIBUTING.md](CONTRIBUTING.md)` documents conventions, branch naming, deploy flow. |
-| **Security** | `gitleaks` + `detect-secrets` clean with a published allowlist for Firebase's public-by-design Web API key ([.gitleaks.toml](.gitleaks.toml)). Service-to-service auth uses IAM identity tokens via `google-auth-library` ([src/lib/cloud-run.ts](apps/frontend/src/lib/cloud-run.ts)) — no SA keys shipped in code. 3 of 5 Cloud Run services are IAM-gated (`--no-allow-unauthenticated`); only the two public demo surfaces are open. [infra/firestore.rules](infra/firestore.rules) blocks EVERY client-side write; server writes use `firebase-admin` from the runtime SA. Bandit scan output committed at [docs/security-scan.md](docs/security-scan.md). PII posture, hashing, mTLS, Secret Manager use in [docs/privacy.md](docs/privacy.md). Disclosure policy in [SECURITY.md](SECURITY.md). |
-| **Efficiency** | Scale-to-zero on `pulse-counterfactual` and `pulse-perception`; `min-instances=1` only on the three services that hold an in-memory event buffer or serve the judge demo. Gemini 2.5 Flash for 5 specialists (roughly 10× cheaper than Pro) with the Pro reserved for the orchestrator's planning step. Process-level budget cap `COST_BUDGET_PER_SESSION_USD=1.00` auto-pauses the tick loop. Observed cost of the full `care → flow → revenue` medical chain: **$0.00774** in 5,085 tokens, 47 s. Full 90-second demo run: **$0.00** (replay writes Firestore directly, no Gemini). Total Vertex spend over 48 h: **$0.63**. `onSnapshot` at document level minimises Firestore egress. See [docs/cost-analysis.md](docs/cost-analysis.md). |
-| **Testing** | `pytest` covers the agent tools in [apps/orchestrator/src/tests/](apps/orchestrator/src/tests/) — Firestore client mocked with `unittest.mock`, happy-path plus one error path per tool. `vitest` + `@testing-library/react` covers fan-PWA components in [apps/fan-pwa/src/__tests__/](apps/fan-pwa/src/__tests__/). GitHub Actions runs lint + typecheck + tests on every push ([.github/workflows/ci.yml](.github/workflows/ci.yml)). The counterfactual simulator is itself an end-to-end integration harness — reality-vs-CF divergence verifies the whole pipeline. Reproducibility procedure in [docs/evaluation.md](docs/evaluation.md). |
-| **Accessibility** | Fan PWA shipped with a11y-first: full keyboard nav, ARIA labels on every button, `role="status"` + `aria-live="polite"` on the Concierge's last reply for screen readers, `aria-live` on queue updates, `focus-visible:ring-2` on interactive elements, `prefers-reduced-motion` honoured globally, semantic HTML throughout, skip-nav link in [layout.tsx](apps/fan-pwa/src/app/layout.tsx), WCAG-AA contrast (cyan #00E5FF on obsidian #0A0D14 passes 7.25:1 normal text). Voice concierge is itself an accessibility feature — primary interaction for a stadium where reading a phone screen is impractical. |
-| **Google Services** | **Nine** Google Cloud + Firebase services meaningfully wired: **Vertex AI** (Gemini 2.5 Pro + 2.5 Flash via ADK 1.x), **Cloud Run** (five services in asia-south1), **Firestore Native** (client `onSnapshot` listeners + server admin SDK), **Pub/Sub** (six typed topics with a dedicated orchestrator subscription), **BigQuery** (`pulse_analytics` dataset, ready for AAR streaming inserts), **Cloud Storage** (`pulse-cctv-clips` bucket, ready for perception), **Secret Manager** (SA-accessible keys), **Cloud Logging + Monitoring** (structured agent traces, Cloud Run native metrics), **Firebase** (Web SDK 11 for live listeners + FCM hooks in place). Full inventory in [docs/system-design.md](docs/system-design.md). |
+### Code Quality — *structure, readability, maintainability*
+
+- **Typed Python with Pydantic models** for every cross-service contract — `Zone`, `Intervention`, `AgentTrace` in [state/firestore_client.py](apps/orchestrator/src/state/firestore_client.py).
+- **Ruff + mypy** configured in every Python service `pyproject.toml` (line-length 100, `target-version=py312`, opinionated rule set). ESLint + `tsc --noEmit` on both Next.js services.
+- **Tool I/O envelope** is consistent across all 19 agent tools: every tool returns `{ok: bool, data: ..., error?: str}` per [Idea.md §6.5](Idea.md); every write-tool takes a mandatory `reason: str` that lands in the Firestore audit log.
+- **Module docstrings** on every Python file; TSDoc on every exported TypeScript symbol.
+- **Single runtime SA + single env file** (`.env.example`) reduces cognitive load — no per-service credential juggling.
+- **Monorepo with explicit boundaries:** `apps/` (six services) · `packages/` (shared assets) · `infra/` (rules + terraform stubs) · `docs/` (rubric-signal docs) · `scripts/` (one-shot utilities). See [CONTRIBUTING.md](CONTRIBUTING.md) for conventions + branch naming + deploy flow.
+
+### Security — *safe and responsible implementation*
+
+- **Secrets hygiene.** `gitleaks` + `detect-secrets` + Bandit all clean ([docs/security-scan.md](docs/security-scan.md)). The one Firebase Web API key in [firebase-client.ts](apps/frontend/src/lib/firebase-client.ts) is public-by-design per [Firebase docs](https://firebase.google.com/docs/projects/api-keys) and allowlisted in [.gitleaks.toml](.gitleaks.toml). No service-account key files are shipped in code.
+- **Service-to-service identity.** IAM-issued identity tokens via `google-auth-library` ([cloud-run.ts](apps/frontend/src/lib/cloud-run.ts)). Three of five Cloud Run services are `--no-allow-unauthenticated`.
+- **Least-privilege runtime SA** — `pulse-runtime@pulse-stadium-ai.iam.gserviceaccount.com` with exactly ten roles documented in [deployments.md](deployments.md).
+- **Firestore rules** ([infra/firestore.rules](infra/firestore.rules)) block every client-side write; server writes go through `firebase-admin` with SA credentials.
+- **Threat model + disclosure policy** in [SECURITY.md](SECURITY.md) and [docs/threat-model.md](docs/threat-model.md). PII posture, event-scoped UUIDs, no-biometrics-on-the-wire in [docs/privacy.md](docs/privacy.md).
+
+### Efficiency — *optimal use of resources*
+
+- **Tiered model selection.** Gemini 2.5 Flash for 5 specialists (~10× cheaper than Pro). Gemini 2.5 Pro reserved for the root orchestrator's planning step.
+- **Scale-to-zero** on `pulse-counterfactual`. `min-instances=1` only where an in-memory buffer or judge-facing demo needs warm-state.
+- **Hard budget cap.** `COST_BUDGET_PER_SESSION_USD=1.00` auto-pauses the tick loop if hit ([main.py](apps/orchestrator/src/main.py)).
+- **Observed cost envelope.** Full `care → flow → revenue` medical chain: **$0.00774** in 5,085 tokens, 47 s. Full 90-second demo run: **$0.00** (deterministic replay writes Firestore directly — see [docs/cost-analysis.md](docs/cost-analysis.md)).
+- **Total Vertex spend across 48 h of build + submit: $0.63** — well under any reasonable operating budget.
+- **Egress-conscious frontend.** Client `onSnapshot` listens at document level, not collection-wide, minimising Firestore reads.
+
+### Testing — *validation of functionality*
+
+- **Python unit tests** in [apps/orchestrator/src/tests/](apps/orchestrator/src/tests/) covering 7+ agent tools across Flow / Care / Revenue. Firestore client mocked via `unittest.mock.patch`. Happy-path + edge + error path per tool.
+- **Python tests** also cover `abs_engine` (counterfactual determinism) and the cost tracker.
+- **TypeScript component tests** in [apps/fan-pwa/src/__tests__/](apps/fan-pwa/src/__tests__/) using `vitest` + `@testing-library/react` with jsdom polyfills for `SpeechSynthesisUtterance`.
+- **GitHub Actions** ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs Python `ruff + mypy + pytest`, Node `tsc + lint + vitest` across both apps, and gitleaks on every push.
+- **Counterfactual-as-integration-test.** The parallel ABS simulator is itself an end-to-end regression harness: any silent break in the orchestrator's chain shows up visually as a collapsed reality-vs-CF delta. Reproducibility steps in [docs/evaluation.md](docs/evaluation.md).
+
+### Accessibility — *inclusive and usable design*
+
+- **Keyboard + screen-reader first.** Skip-nav link as the first tab stop ([fan-pwa/layout.tsx](apps/fan-pwa/src/app/layout.tsx)); `<main id="main" tabIndex={-1}>` target; `:focus-visible` ring site-wide.
+- **Dedicated live regions.** `role="status" aria-live="polite"` announces the Concierge's latest reply and the Queue screen's shortest-wait without stealing focus.
+- **Semantic HTML.** `role="dialog" aria-modal="true"` + labelledby/describedby on onboarding; `role="tablist"`/`role="tab"` + `aria-selected` on the tab bar; `<label htmlFor>` on every form input.
+- **Reduced motion honoured.** `@media (prefers-reduced-motion: reduce)` kills all animation — the pulsing agent dots and bubble-in transitions stop for users who opt out.
+- **WCAG-AA contrast.** Cyan `#00E5FF` on obsidian `#0A0D14` = 7.25:1 for normal text (passes AA-large AND AAA). Warning red `#FF5252` on dark = 4.9:1.
+- **Pinch-zoom allowed** (WCAG 1.4.4 — `maximumScale` / `userScalable` deliberately unset).
+- **Voice concierge itself is an a11y feature** — primary interaction for users who can't comfortably read a phone screen in a crowded stadium.
+- Full a11y decision log in [docs/accessibility.md](docs/accessibility.md).
+
+### Google Services — *meaningful integration of Google Services*
+
+**Nine** Google Cloud + Firebase services wired in production paths (not just listed):
+
+1. **Vertex AI** — Gemini 2.5 Pro (orchestrator) + Gemini 2.5 Flash (five specialists) via `google-adk` 1.x. Routed to `us-central1` because asia-south1 doesn't serve 2.5 Pro.
+2. **Cloud Run** — five live services in `asia-south1` (orchestrator, frontend, fan-pwa, simulator, counterfactual). `gcloud run deploy --source` builds.
+3. **Firestore Native** — hot-state backbone; client `onSnapshot` + server `firebase-admin`. Security rules deployed via `firebaserules.googleapis.com` REST API.
+4. **Pub/Sub** — six typed topics (`sensor-events`, `vision-frames`, `agent-events`, `fan-actions`, `staff-tasks`, `signage-updates`) + a dedicated orchestrator subscription.
+5. **BigQuery** — `pulse_analytics` dataset in `asia-south1`; ready for streaming inserts of agent traces.
+6. **Cloud Storage** — `pulse-cctv-clips` bucket; ready for Gemini 2.5 Vision ingestion.
+7. **Secret Manager** — `roles/secretmanager.secretAccessor` on the runtime SA; no secrets shipped in code.
+8. **Cloud Logging + Monitoring** — structured per-invocation traces; Cloud Run native metrics.
+9. **Firebase** — Web SDK 11 for live listeners + FCM hooks for push nudges.
+
+Full inventory + IAM matrix in [docs/system-design.md](docs/system-design.md).
 
 ---
 

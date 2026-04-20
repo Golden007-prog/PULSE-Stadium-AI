@@ -34,6 +34,61 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #272a32;
   }
+
+  /* Visible keyboard focus everywhere (WCAG 2.4.7). */
+  :focus-visible {
+    outline: 2px solid #00E5FF;
+    outline-offset: 2px;
+  }
+
+  /* Skip-nav link — first tab stop, visually hidden until focused. */
+  .skip-nav {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    z-index: 100;
+  }
+  .skip-nav:focus {
+    left: 8px;
+    top: 8px;
+    width: auto;
+    height: auto;
+    padding: 8px 12px;
+    background: #00E5FF;
+    color: #0A0D14;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  /* Screen-reader-only utility. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* ─── Reduced-motion users: honour the system preference (WCAG 2.3.3) ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .pulse-dot { animation: none; opacity: 0.8; }
+  .trace-enter { animation: none; opacity: 1; transform: none; }
 }
 
 @layer components {

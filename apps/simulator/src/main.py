@@ -14,7 +14,7 @@ import os
 import random
 import time
 import uuid
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 from typing import Any
 
@@ -22,10 +22,10 @@ import yaml
 from fastapi import FastAPI
 from google.cloud import pubsub_v1
 
-from .emitters.turnstile import emit_turnstile
+from .emitters.cctv import emit_cctv_anomaly
 from .emitters.pos import emit_pos
 from .emitters.restroom import emit_restroom
-from .emitters.cctv import emit_cctv_anomaly
+from .emitters.turnstile import emit_turnstile
 
 logging.basicConfig(
     level=os.environ.get("LOG_LEVEL", "INFO"),
@@ -214,10 +214,8 @@ async def lifespan(app: FastAPI):
         state["running"] = False
         if _task and not _task.done():
             _task.cancel()
-            try:
+            with suppress(asyncio.CancelledError):
                 await _task
-            except asyncio.CancelledError:
-                pass
 
 
 app = FastAPI(title="pulse-simulator", lifespan=lifespan)
@@ -246,9 +244,7 @@ async def reset() -> dict[str, Any]:
     state["running"] = False
     if _task and not _task.done():
         _task.cancel()
-        try:
+        with suppress(asyncio.CancelledError):
             await _task
-        except asyncio.CancelledError:
-            pass
     _task = asyncio.create_task(run_scenario(), name="scenario-runner")
     return {"status": "restarting", "session_id": state.get("session_id")}

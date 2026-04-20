@@ -44,9 +44,17 @@ export function CfToggle({ active, sessionId, onStart, onStop }: Props) {
 
   return (
     <button
+      type="button"
       onClick={toggle}
       disabled={busy}
-      className={`mono text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 transition-colors ${
+      aria-label={
+        active
+          ? "Stop counterfactual simulator"
+          : "Run counterfactual simulator alongside reality"
+      }
+      aria-pressed={active}
+      aria-busy={busy}
+      className={`mono text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-purple ${
         active
           ? "bg-accent-purple text-surface-dim"
           : "bg-surface text-ink-mute hover:bg-surface-high hover:text-accent-purple"

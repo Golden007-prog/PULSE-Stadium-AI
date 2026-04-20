@@ -26,7 +26,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${jbmono.variable}`}>
-      <body>{children}</body>
+      <body>
+        {/* Skip-nav link — first tab stop for keyboard / screen-reader users. */}
+        <a href="#main" className="skip-nav">
+          Skip to main content
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

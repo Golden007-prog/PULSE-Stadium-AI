@@ -31,30 +31,48 @@ export function PlaybackControls({
   }
 
   return (
-    <footer className="h-12 bg-surface-low flex items-center px-4 gap-4 text-[11px]">
+    <footer
+      role="contentinfo"
+      aria-label="Playback controls and orchestrator status"
+      className="h-12 bg-surface-low flex items-center px-4 gap-4 text-[11px]"
+    >
       <button
+        type="button"
         onClick={resetScenario}
         disabled={busy}
-        className="mono text-[10px] uppercase tracking-wider px-3 py-1.5 bg-accent-cyan text-surface-dim hover:shadow-glow disabled:opacity-50 transition-shadow"
+        aria-label="Reset the simulator scenario and start a fresh 5-minute run"
+        aria-busy={busy}
+        className="mono text-[10px] uppercase tracking-wider px-3 py-1.5 bg-accent-cyan text-surface-dim hover:shadow-glow disabled:opacity-50 transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-surface-low"
       >
         {busy ? "resetting…" : "▶ reset scenario"}
       </button>
       <button
+        type="button"
         className="mono text-[10px] uppercase tracking-wider px-3 py-1.5 bg-surface text-ink-fade cursor-not-allowed"
         disabled
-        title="Ships in phase 5"
+        aria-label="Counterfactual toggle — available via the toolbar above"
+        title="Use the 'run counterfactual' button in the top-right of the twin"
       >
-        counterfactual (phase 5)
+        counterfactual (top-right ↑)
       </button>
-      <div className="flex-1" />
-      <Stat label="orch tick" value={ticks.toString()} />
-      <Stat label="spend" value={`$${totalUsd.toFixed(4)}`} />
+      <div className="flex-1" aria-hidden="true" />
+      <Stat label="orch tick" value={ticks.toString()} srLabel="orchestrator ticks" />
+      <Stat label="spend" value={`$${totalUsd.toFixed(4)}`} srLabel="cumulative Vertex AI spend in USD" />
       {budgetPaused && (
-        <span className="mono text-[10px] uppercase tracking-wider text-accent-red pulse-dot">
+        <span
+          role="status"
+          aria-live="polite"
+          className="mono text-[10px] uppercase tracking-wider text-accent-red pulse-dot"
+        >
           budget paused
         </span>
       )}
-      <div className="min-w-[280px] max-w-md text-right">
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="min-w-[280px] max-w-md text-right"
+      >
         {msg && (
           <span className="mono text-[10px] uppercase tracking-wider text-accent-cyan">
             {msg}
@@ -70,9 +88,17 @@ export function PlaybackControls({
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({
+  label,
+  value,
+  srLabel,
+}: {
+  label: string;
+  value: string;
+  srLabel?: string;
+}) {
   return (
-    <div className="flex items-baseline gap-1.5">
+    <div className="flex items-baseline gap-1.5" aria-label={srLabel ?? label}>
       <span className="mono text-[9px] uppercase tracking-wider text-ink-fade">
         {label}
       </span>
@@ -80,3 +106,4 @@ function Stat({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+

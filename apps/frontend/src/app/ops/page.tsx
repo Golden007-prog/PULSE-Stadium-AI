@@ -173,7 +173,10 @@ function OpsPage() {
     >
       <MatchTicker attendance={orch.attendance_counted ?? 0} />
 
-      <div
+      <main
+        id="main"
+        tabIndex={-1}
+        aria-label="PULSE operations console"
         className="relative grid overflow-hidden"
         style={{ gridTemplateColumns: "260px 1fr 380px" }}
       >
@@ -183,9 +186,17 @@ function OpsPage() {
           totalInvocations={orch.total_invocations ?? 0}
         />
 
-        <div className="relative bg-surface-dim flex flex-col overflow-hidden">
+        <section
+          aria-label="3D stadium twin with counterfactual overlay"
+          className="relative bg-surface-dim flex flex-col overflow-hidden"
+        >
           <div className="absolute top-3 right-3 z-10 flex items-center gap-2 pointer-events-auto">
-            <div className="mono text-[10px] uppercase tracking-wider text-ink-fade pointer-events-none">
+            <div
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              className="mono text-[10px] uppercase tracking-wider text-ink-fade pointer-events-none"
+            >
               {realityZones.length} zones · {interventions.length} interventions
               {cfActive && cfSummary?.tick != null && ` · cf t+${cfSummary.tick * 5}s`}
             </div>
@@ -198,7 +209,11 @@ function OpsPage() {
           </div>
 
           <div className="flex-1 min-h-0 flex">
-            <div className="flex-1 relative">
+            <div
+              role="region"
+              aria-label="Reality twin — live venue state with PULSE intervening"
+              className="flex-1 relative"
+            >
               <TwinLabel variant="reality" />
               <div className="absolute inset-0">
                 <Twin3D zones={realityZones} variant="reality" autoRotate />
@@ -209,8 +224,15 @@ function OpsPage() {
 
             {cfActive && (
               <>
-                <div className="w-px bg-gradient-to-b from-accent-cyan via-accent-purple to-accent-purple opacity-60" />
-                <div className="flex-1 relative">
+                <div
+                  aria-hidden="true"
+                  className="w-px bg-gradient-to-b from-accent-cyan via-accent-purple to-accent-purple opacity-60"
+                />
+                <div
+                  role="region"
+                  aria-label="Counterfactual twin — parallel timeline with all agent actions suppressed"
+                  className="flex-1 relative"
+                >
                   <TwinLabel variant="counterfactual" />
                   <div className="absolute inset-0">
                     <Twin3D
@@ -220,7 +242,11 @@ function OpsPage() {
                     />
                   </div>
                   {!cfSummary && (
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    <div
+                      role="status"
+                      aria-live="polite"
+                      className="absolute inset-0 flex items-center justify-center"
+                    >
                       <div className="mono text-[11px] uppercase tracking-wider text-ink-fade bg-surface-low px-3 py-2">
                         spinning up counterfactual…
                       </div>
@@ -238,10 +264,10 @@ function OpsPage() {
               realityInterventionCount={interventions.length}
             />
           )}
-        </div>
+        </section>
 
         <AgentTracePanel traces={traces} />
-      </div>
+      </main>
 
       <PlaybackControls
         ticks={orch.ticks ?? 0}
