@@ -48,6 +48,35 @@ export interface Venue {
   center_lng: number;
 }
 
+export interface CfSummary {
+  id: string;
+  status: "running" | "finished" | "stopped" | "error";
+  tick: number;
+  elapsed_s?: number;
+  zones_latest?: Record<string, number>;
+  hot_count?: number;
+  critical_count?: number;
+  metrics?: {
+    peak_density: number;
+    peak_zone: string;
+    over_threshold_seconds: number;
+    incidents_would_occur: number;
+    wait_time_proxy_s: number;
+  };
+  t0_zones?: Record<string, number>;
+  max_ticks?: number;
+  tick_interval_s?: number;
+}
+
+export interface CfTickState {
+  id: string;
+  tick: number;
+  elapsed_s: number;
+  zones: Record<string, number>;
+  hot_zones: string[];
+  critical_zones: string[];
+}
+
 export interface OrchestratorState {
   running: boolean;
   ticks: number;

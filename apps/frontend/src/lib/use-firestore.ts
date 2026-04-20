@@ -23,7 +23,7 @@ export interface CollectionOpts {
  * practice on asia-south1).
  */
 export function useCollection<T>(
-  path: string,
+  path: string | null,
   opts: CollectionOpts = {}
 ): { data: T[]; error: Error | null; loading: boolean } {
   const [data, setData] = useState<T[]>([]);
@@ -35,6 +35,12 @@ export function useCollection<T>(
   const limitVal = opts.limit;
 
   useEffect(() => {
+    if (!path) {
+      setData([]);
+      setError(null);
+      setLoading(false);
+      return;
+    }
     const db = clientDb();
     let q: Query<DocumentData> = collection(db, path);
     if (orderField) q = query(q, orderByFn(orderField, orderDir ?? "asc"));
@@ -66,13 +72,19 @@ export function useCollection<T>(
  * Live Firestore document listener.
  */
 export function useDoc<T>(
-  path: string
+  path: string | null
 ): { data: T | null; error: Error | null; loading: boolean } {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!path) {
+      setData(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
     const db = clientDb();
     const ref = doc(db, path);
     const unsub = onSnapshot(

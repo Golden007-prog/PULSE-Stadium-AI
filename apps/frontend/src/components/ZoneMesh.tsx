@@ -6,10 +6,32 @@ import { Html } from "@react-three/drei";
 import { projectLatLng } from "@/lib/geo";
 import { densityColor, densityLabel } from "@/lib/colors";
 import type { Zone } from "@/lib/types";
+import type { TwinVariant } from "./Twin3D";
 
-export function ZoneMesh({ zone }: { zone: Zone }) {
+/**
+ * Counterfactual ramp: same bands as reality but pushed toward purple/red
+ * to convey "what would have happened without intervention". Rendered at
+ * reduced opacity so it still reads as a ghost twin.
+ */
+function densityColorCf(d: number): string {
+  if (d < 1.0) return "#7A4BC0";
+  if (d < 2.0) return "#9B6CFF";
+  if (d < 3.0) return "#C05BB8";
+  if (d < 3.8) return "#E04B8C";
+  if (d < 4.8) return "#FF3D54";
+  return "#FF1A3A";
+}
+
+export function ZoneMesh({
+  zone,
+  variant = "reality",
+}: {
+  zone: Zone;
+  variant?: TwinVariant;
+}) {
   const [hover, setHover] = useState(false);
   const meshRef = useRef<THREE.Mesh>(null);
+  const isCf = variant === "counterfactual";
 
   const { geometry, height, centroid, color } = useMemo(() => {
     const pts = (zone.polygon ?? []).map((p) => projectLatLng(p.lat, p.lng));
@@ -24,7 +46,6 @@ export function ZoneMesh({ zone }: { zone: Zone }) {
       bevelEnabled: false,
     });
     geom.rotateX(-Math.PI / 2);
-    // Center of mass for label positioning
     let cx = 0;
     let cz = 0;
     for (const p of pts) {
@@ -36,11 +57,11 @@ export function ZoneMesh({ zone }: { zone: Zone }) {
       geometry: geom,
       height,
       centroid: { x: cx / n, z: cz / n },
-      color: densityColor(density),
+      color: isCf ? densityColorCf(density) : densityColor(density),
     };
-  }, [zone]);
+  }, [zone, isCf]);
 
-  // Pulse emissive on high density
+  // Pulse emissive on high density; counterfactual pulses harder + purple.
   useFrame((state) => {
     const m = meshRef.current;
     if (!m) return;
@@ -48,11 +69,16 @@ export function ZoneMesh({ zone }: { zone: Zone }) {
     const d = zone.current_density ?? 0;
     if (d >= 4.0) {
       const t = state.clock.elapsedTime;
-      mat.emissiveIntensity = 0.45 + 0.3 * Math.sin(t * 3.0);
+      mat.emissiveIntensity =
+        (isCf ? 0.55 : 0.45) + 0.3 * Math.sin(t * (isCf ? 3.6 : 3.0));
     } else {
-      mat.emissiveIntensity = d >= 3.5 ? 0.32 : 0.15;
+      mat.emissiveIntensity = d >= 3.5 ? (isCf ? 0.38 : 0.32) : isCf ? 0.22 : 0.15;
     }
   });
+
+  const baseOpacity = zone.type === "seating" ? 0.78 : 0.92;
+  const opacity = isCf ? Math.max(0.42, baseOpacity - 0.28) : baseOpacity;
+  const borderLabelColor = isCf ? "#9B6CFF" : "#00E5FF";
 
   return (
     <group>
@@ -68,11 +94,11 @@ export function ZoneMesh({ zone }: { zone: Zone }) {
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={0.15}
+          emissiveIntensity={isCf ? 0.22 : 0.15}
           metalness={0.05}
-          roughness={0.55}
+          roughness={isCf ? 0.7 : 0.55}
           transparent
-          opacity={zone.type === "seating" ? 0.78 : 0.92}
+          opacity={opacity}
         />
       </mesh>
       {(hover || (zone.current_density ?? 0) >= 4.0) && (
@@ -82,14 +108,21 @@ export function ZoneMesh({ zone }: { zone: Zone }) {
           occlude={false}
           distanceFactor={170}
         >
-          <div className="bg-surface/90 backdrop-blur px-2 py-1 whitespace-nowrap pointer-events-none"
-               style={{ borderLeft: `2px solid ${color}` }}>
-            <div className="mono text-[10px] uppercase tracking-wider text-accent-cyan">
+          <div
+            className="bg-surface/90 backdrop-blur px-2 py-1 whitespace-nowrap pointer-events-none"
+            style={{ borderLeft: `2px solid ${color}` }}
+          >
+            <div
+              className="mono text-[10px] uppercase tracking-wider"
+              style={{ color: borderLabelColor }}
+            >
               {zone.id}
+              {isCf && " · cf"}
             </div>
             <div className="text-[11px] text-ink">{zone.name}</div>
             <div className="mono text-[10px] text-ink-fade">
-              {(zone.current_density ?? 0).toFixed(2)} p/m² · {densityLabel(zone.current_density ?? 0)}
+              {(zone.current_density ?? 0).toFixed(2)} p/m² ·{" "}
+              {densityLabel(zone.current_density ?? 0)}
             </div>
           </div>
         </Html>
