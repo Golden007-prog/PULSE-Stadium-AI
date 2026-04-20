@@ -16,6 +16,47 @@
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: #1a1f2b; }
+
+  /* Keyboard focus is highly visible; WCAG 2.4.7. */
+  :focus-visible {
+    outline: 2px solid #00E5FF;
+    outline-offset: 2px;
+  }
+
+  /* Skip-nav target. The link itself is visually hidden until focused. */
+  .skip-nav {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    z-index: 100;
+  }
+  .skip-nav:focus {
+    left: 8px;
+    top: 8px;
+    width: auto;
+    height: auto;
+    padding: 8px 12px;
+    background: #00E5FF;
+    color: #0A0D14;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  /* Screen-reader-only utility: content read by AT, invisible on screen. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
 }
 
 @layer components {
@@ -41,4 +82,18 @@
     position: absolute; top: 0; left: 0; right: 0; height: 1px;
     background: linear-gradient(90deg, transparent 0%, rgba(0,229,255,0.55) 50%, transparent 100%);
   }
+}
+
+/* ─── Reduced-motion users: honour the system preference (WCAG 2.3.3) ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .pulse-dot { animation: none; opacity: 0.8; }
+  .bubble-in { animation: none; opacity: 1; transform: none; }
 }

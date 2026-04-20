@@ -17,21 +17,32 @@ export function TabBar({
     { id: "match", label: "Match", icon: <Bat /> },
   ];
   return (
-    <nav className="h-14 bg-surface-low flex items-stretch justify-around">
+    <nav
+      aria-label="Primary"
+      role="tablist"
+      className="h-14 bg-surface-low flex items-stretch justify-around"
+    >
       {tabs.map((t) => {
         const on = active === t.id;
         return (
           <button
+            type="button"
+            role="tab"
             key={t.id}
             onClick={() => onChange(t.id)}
-            className={`flex-1 flex flex-col items-center justify-center gap-1 ${
+            aria-label={`${t.label} tab`}
+            aria-pressed={on}
+            aria-selected={on}
+            className={`flex-1 flex flex-col items-center justify-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan ${
               on ? "text-accent-cyan" : "text-ink-fade"
             }`}
             style={{
               borderTop: on ? "2px solid #00E5FF" : "2px solid transparent",
             }}
           >
-            <div className="w-5 h-5">{t.icon}</div>
+            <div className="w-5 h-5" aria-hidden="true">
+              {t.icon}
+            </div>
             <span className="mono text-[9px] uppercase tracking-wider">
               {t.label}
             </span>

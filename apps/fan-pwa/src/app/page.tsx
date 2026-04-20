@@ -44,7 +44,7 @@ export default function FanPwaHome() {
   return (
     <div className="h-screen flex flex-col bg-surface-dim">
       <Header fan={fan} onSignOut={signOut} />
-      <main className="flex-1 overflow-y-auto">
+      <main id="main" tabIndex={-1} className="flex-1 overflow-y-auto">
         {tab === "concierge" && <ConciergeScreen fan={fan} />}
         {tab === "queues" && <QueuesScreen />}
         {tab === "wayfind" && <WayfindScreen fan={fan} />}
@@ -58,21 +58,32 @@ export default function FanPwaHome() {
 
 function Header({ fan, onSignOut }: { fan: FanProfile; onSignOut: () => void }) {
   return (
-    <header className="h-12 bg-surface-low flex items-center px-4 gap-3 scan-line">
-      <span className="text-accent-cyan font-semibold tracking-[0.22em] text-sm">
+    <header
+      role="banner"
+      className="h-12 bg-surface-low flex items-center px-4 gap-3 scan-line"
+    >
+      <span
+        aria-label="PULSE — stadium concierge"
+        className="text-accent-cyan font-semibold tracking-[0.22em] text-sm"
+      >
         PULSE
       </span>
-      <div className="h-4 w-px bg-surface" />
+      <div className="h-4 w-px bg-surface" aria-hidden="true" />
       <div className="flex-1 min-w-0">
         <div className="text-[13px] font-medium truncate">
+          <span className="sr-only">Signed in as </span>
           {fan.display_name}
-          <span className="mono text-[11px] text-ink-fade ml-2">{fan.seat}</span>
+          <span className="mono text-[11px] text-ink-fade ml-2">
+            <span className="sr-only">Seat </span>
+            {fan.seat}
+          </span>
         </div>
       </div>
       <button
+        type="button"
         onClick={onSignOut}
-        className="mono text-[10px] uppercase tracking-wider text-ink-fade hover:text-accent-cyan"
-        title="Clear profile"
+        aria-label="Clear fan profile and return to onboarding"
+        className="mono text-[10px] uppercase tracking-wider text-ink-fade hover:text-accent-cyan focus-visible:ring-2 focus-visible:ring-accent-cyan focus-visible:outline-none"
       >
         reset
       </button>

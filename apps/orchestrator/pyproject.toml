@@ -1,7 +1,7 @@
 [project]
 name = "pulse-orchestrator"
 version = "0.1.0"
-description = "PULSE ADK multi-agent orchestrator. Runs the 5s decision loop, delegates to Flow / Queue / Concierge specialists, and writes interventions + cost-tracked traces back to Firestore."
+description = "PULSE ADK multi-agent orchestrator. Runs the 5s decision loop, delegates to Flow / Queue / Concierge / Care / Revenue specialists via the AgentTool pattern, and writes interventions + cost-tracked traces back to Firestore."
 requires-python = ">=3.12"
 dependencies = [
   "fastapi>=0.115.0",
@@ -13,9 +13,73 @@ dependencies = [
   "pydantic>=2.8.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+  "ruff>=0.6.0",
+  "mypy>=1.11.0",
+  "pytest>=8.0.0",
+  "pytest-asyncio>=0.24.0",
+  "pytest-mock>=3.14.0",
+]
+
 [build-system]
 requires = ["hatchling>=1.24"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
+
+# ────────────────────────────────────────────────────────────────────────
+# Ruff — fast Python linter + formatter
+# ────────────────────────────────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["src/tests/fixtures"]
+
+[tool.ruff.lint]
+select = [
+  "E",    # pycodestyle errors
+  "F",    # pyflakes
+  "I",    # isort
+  "B",    # flake8-bugbear
+  "UP",   # pyupgrade
+  "SIM",  # flake8-simplify
+  "RUF",  # ruff-specific
+]
+ignore = [
+  "E501",  # line-too-long (line-length already set)
+  "B008",  # Depends() in FastAPI is fine
+]
+
+[tool.ruff.lint.per-file-ignores]
+"src/tests/*" = ["S101"]  # allow `assert` in tests
+
+# ────────────────────────────────────────────────────────────────────────
+# Mypy — strict type-checking, with ADK / genai SDKs allowed to be loose
+# ────────────────────────────────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.12"
+strict = false
+ignore_missing_imports = true
+disallow_untyped_defs = false
+warn_return_any = true
+warn_unused_ignores = true
+exclude = ["src/tests/fixtures"]
+
+[[tool.mypy.overrides]]
+module = ["google.adk.*", "google.genai.*"]
+ignore_errors = true
+
+# ────────────────────────────────────────────────────────────────────────
+# Pytest
+# ────────────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["src/tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+addopts = "-ra --strict-markers"
+filterwarnings = [
+  "ignore::DeprecationWarning:google.*",
+  "ignore::UserWarning:google.adk.*",
+]

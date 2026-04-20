@@ -5,14 +5,22 @@ import { getFirestore, type Firestore } from "firebase/firestore";
 /**
  * Firebase Web SDK config for pulse-stadium-ai.
  *
- * These values are DELIBERATELY hardcoded — they're the Web SDK
- * config, which Firebase expects to be public. Real security lives
- * in infra/firestore.rules, which only permits reads on the three
- * ops surfaces (venues/**, agent_traces/**, counterfactual/**) and
- * blocks every client-side write.
+ * These values are PUBLIC by design, per Firebase's own documentation:
+ *   https://firebase.google.com/docs/projects/api-keys
+ *
+ * A Firebase Web API key identifies the project but does NOT authenticate
+ * or authorise access to data. Real security lives in infra/firestore.rules,
+ * which is deployed via the firebaserules REST API and:
+ *   - permits READS only on /venues/**, /agent_traces/**, /counterfactual/**
+ *   - blocks EVERY client-side write
+ *
+ * Server-side writes go through firebase-admin with the pulse-runtime
+ * service-account credentials (see apps/frontend/src/lib/firestore-admin.ts).
+ *
+ * The allowlist in .gitleaks.toml recognises this key as public-by-design.
  */
 export const firebaseConfig = {
-  apiKey: "AIzaSyADgy1N6-akrO8XPOqaHtkeKWIx8z9wOHo",
+  apiKey: "AIzaSyADgy1N6-akrO8XPOqaHtkeKWIx8z9wOHo", // gitleaks:allow — public-by-design Firebase Web API key
   authDomain: "pulse-stadium-ai.firebaseapp.com",
   projectId: "pulse-stadium-ai",
   storageBucket: "pulse-stadium-ai.firebasestorage.app",

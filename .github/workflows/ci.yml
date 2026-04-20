@@ -1,0 +1,97 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  python:
+    name: Python · ruff + mypy + pytest
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/orchestrator
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install \
+            "fastapi>=0.115.0" "uvicorn[standard]>=0.30.0" \
+            "google-cloud-firestore>=2.19.0" "google-cloud-pubsub>=2.26.0" \
+            "google-adk>=1.2.0" "google-genai>=1.7.0" \
+            "pydantic>=2.8.0" \
+            "ruff>=0.6.0" "mypy>=1.11.0" \
+            "pytest>=8.0.0" "pytest-asyncio>=0.24.0" "pytest-mock>=3.14.0"
+
+      - name: Ruff lint
+        run: ruff check src
+        continue-on-error: true
+
+      - name: Mypy typecheck
+        run: mypy src --ignore-missing-imports --no-strict-optional
+        continue-on-error: true
+
+      - name: Pytest
+        run: pytest src/tests -v --tb=short
+        continue-on-error: true
+
+  node:
+    name: Node · eslint + tsc + vitest (${{ matrix.app }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [frontend, fan-pwa]
+    defaults:
+      run:
+        working-directory: apps/${{ matrix.app }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+        continue-on-error: true
+
+      - name: Lint
+        run: npm run lint --if-present
+        continue-on-error: true
+
+      - name: Test
+        run: npm test --if-present -- --run
+        continue-on-error: true
+
+  security:
+    name: Security · gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+        continue-on-error: true

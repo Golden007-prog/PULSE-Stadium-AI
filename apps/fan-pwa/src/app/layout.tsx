@@ -3,7 +3,11 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const jbmono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jbmono", display: "swap" });
+const jbmono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jbmono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "PULSE · Stadium Concierge",
@@ -20,14 +24,21 @@ export const viewport: Viewport = {
   themeColor: "#00E5FF",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  // `maximumScale:1 + userScalable:false` deliberately relaxed: pinch-zoom
+  // is a standard a11y accommodation and WCAG 1.4.4 forbids blocking it.
+  // The Fan PWA layout is already fluid so we don't need to lock scale.
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${jbmono.variable}`}>
-      <body>{children}</body>
+      <body>
+        {/* Skip-nav link — first tab stop for keyboard / screen-reader users. */}
+        <a href="#main" className="skip-nav">
+          Skip to main content
+        </a>
+        {children}
+      </body>
     </html>
   );
 }

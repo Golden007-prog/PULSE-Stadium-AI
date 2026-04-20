@@ -1,0 +1,26 @@
+# gitleaks config for PULSE.
+#
+# Scanner will flag the Firebase Web SDK apiKey in
+# apps/frontend/src/lib/firebase-client.ts. Per Firebase's own
+# documentation, this key is PUBLIC by design — it identifies the
+# project but grants no protected access. Real security lives in
+# infra/firestore.rules (deployed via the firebaserules REST API)
+# which blocks every client-side write. The key is therefore safe to
+# commit and is intentionally allowlisted below.
+
+title = "PULSE gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known-safe public identifiers"
+paths = [
+  # .env.example ships placeholder-only values (no real credentials)
+  '''.env.example''',
+]
+regexTarget = "match"
+regexes = [
+  # Firebase Web API key — public-by-design project identifier
+  '''AIzaSyADgy1N6-akrO8XPOqaHtkeKWIx8z9wOHo''',
+]

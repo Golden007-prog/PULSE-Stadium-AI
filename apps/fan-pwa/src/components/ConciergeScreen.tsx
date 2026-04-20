@@ -98,30 +98,63 @@ export function ConciergeScreen({ fan }: { fan: FanProfile }) {
     r.start();
   }
 
+  // The last concierge reply is announced politely to assistive tech via
+  // an aria-live="polite" region — screen readers read new replies without
+  // stealing focus from the input.
+  const lastConciergeReply =
+    [...turns].reverse().find((t) => t.role === "concierge")?.text ?? "";
+
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+      <section
+        aria-label="Conversation with the Concierge agent"
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-3"
+      >
         {turns.map((t, i) => (
           <Bubble key={i} turn={t} />
         ))}
         {busy && (
-          <div className="flex items-center gap-2 text-ink-fade text-[12px]">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-accent-cyan pulse-dot" />
+          <div
+            role="status"
+            aria-live="polite"
+            aria-label="Concierge is thinking"
+            className="flex items-center gap-2 text-ink-fade text-[12px]"
+          >
+            <span
+              aria-hidden="true"
+              className="inline-block w-1.5 h-1.5 rounded-full bg-accent-cyan pulse-dot"
+            />
             <span className="mono text-[10px] uppercase tracking-wider">
               concierge thinking · orchestrator → concierge → queue
             </span>
           </div>
         )}
         <div ref={endRef} />
+      </section>
+
+      {/* Invisible live-region that re-announces the latest Concierge reply. */}
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {lastConciergeReply}
       </div>
 
-      <div className="px-4 pt-2 pb-0 overflow-x-auto flex gap-2">
+      <div
+        role="toolbar"
+        aria-label="Suggested questions"
+        className="px-4 pt-2 pb-0 overflow-x-auto flex gap-2"
+      >
         {SUGGESTIONS.map((s) => (
           <button
+            type="button"
             key={s}
             onClick={() => ask(s, "text")}
             disabled={busy}
-            className="flex-shrink-0 mono text-[10px] uppercase tracking-wider px-3 py-1.5 bg-surface-low text-ink-mute hover:text-accent-cyan disabled:opacity-40"
+            aria-label={`Ask the Concierge: ${s}`}
+            className="flex-shrink-0 mono text-[10px] uppercase tracking-wider px-3 py-1.5 bg-surface-low text-ink-mute hover:text-accent-cyan disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-accent-cyan focus-visible:outline-none"
           >
             {s}
           </button>
@@ -129,28 +162,38 @@ export function ConciergeScreen({ fan }: { fan: FanProfile }) {
       </div>
 
       <form
+        aria-label="Ask the Concierge"
         className="flex items-center gap-2 px-4 py-3"
         onSubmit={(e) => {
           e.preventDefault();
           ask(input, "text");
         }}
       >
+        <label htmlFor="concierge-input" className="sr-only">
+          Your question to the Concierge
+        </label>
         <input
+          id="concierge-input"
+          type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={hasSpeech ? "type or tap mic…" : "type a question…"}
           disabled={busy}
-          className="flex-1 bg-surface-low px-4 py-3 text-[14px] focus:outline-none"
+          aria-label="Type your question to the Concierge"
+          className="flex-1 bg-surface-low px-4 py-3 text-[14px] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan"
         />
         {hasSpeech && (
           <button
             type="button"
             onClick={toggleMic}
             disabled={busy}
+            aria-label={recording ? "Stop voice input" : "Start voice input"}
+            aria-pressed={recording}
             className={`w-12 h-12 flex items-center justify-center ${
-              recording ? "bg-accent-red text-white animate-pulse" : "bg-surface-low text-accent-cyan"
-            } disabled:opacity-40`}
-            aria-label="voice input"
+              recording
+                ? "bg-accent-red text-white animate-pulse"
+                : "bg-surface-low text-accent-cyan"
+            } disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-accent-cyan focus-visible:outline-none`}
           >
             <MicIcon />
           </button>
@@ -158,8 +201,8 @@ export function ConciergeScreen({ fan }: { fan: FanProfile }) {
         <button
           type="submit"
           disabled={busy || !input.trim()}
-          className="w-12 h-12 flex items-center justify-center bg-accent-cyan text-surface-dim disabled:opacity-40"
-          aria-label="send"
+          aria-label="Send question"
+          className="w-12 h-12 flex items-center justify-center bg-accent-cyan text-surface-dim disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-accent-cyan focus-visible:outline-none"
         >
           <SendIcon />
         </button>
