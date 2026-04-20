@@ -16,7 +16,7 @@
     "firebase-admin": "^12.7.0",
     "google-auth-library": "^9.15.0",
     "swr": "^2.2.5",
-    "three": "^0.171.0",
+    "three": "^0.184.0",
     "@react-three/fiber": "^8.17.10",
     "@react-three/drei": "^9.120.3"
   },
