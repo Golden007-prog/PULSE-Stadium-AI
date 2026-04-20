@@ -17,7 +17,7 @@ export function Onboarding({ onDone }: { onDone: (p: FanProfile) => void }) {
       <div className="flex-1 flex items-center justify-center px-6">
         <div className="w-full max-w-sm">
           <div className="mono text-[10px] uppercase tracking-[0.28em] text-ink-fade mb-6">
-            Gen AI Academy APAC · Track 1
+            Virtual: PromptWars
           </div>
           <h1
             id="onboarding-title"

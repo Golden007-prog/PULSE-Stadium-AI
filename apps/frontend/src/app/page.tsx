@@ -47,7 +47,7 @@ export default function Landing() {
             PULSE
           </span>
           <span className="mono text-[10px] uppercase tracking-[0.18em] text-ink-fade">
-            gen ai academy apac · track 1
+            Virtual: PromptWars
           </span>
         </div>
         <div className="flex items-center gap-4 mono text-[10px] uppercase tracking-wider text-ink-fade">
