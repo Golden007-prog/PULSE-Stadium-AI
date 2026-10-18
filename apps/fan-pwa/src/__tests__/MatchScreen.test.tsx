@@ -1,6 +1,16 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MatchScreen } from "@/components/MatchScreen";
+import { SWRConfig } from "swr";
+
+function renderMatchScreen() {
+  // Isolate SWR requests so the loading test's pending fetch cannot leak.
+  return render(
+    <SWRConfig value={{ provider: () => new Map() }}>
+      <MatchScreen />
+    </SWRConfig>
+  );
+}
 
 const MATCH_PAYLOAD = {
   match_id: "RCB_vs_CSK_2026_final",
@@ -30,7 +40,7 @@ describe("MatchScreen", () => {
     globalThis.fetch = vi.fn(
       () => new Promise(() => undefined)
     ) as unknown as typeof fetch;
-    render(<MatchScreen />);
+    renderMatchScreen();
     expect(screen.getByText(/loading match/i)).toBeInTheDocument();
   });
 
@@ -40,7 +50,7 @@ describe("MatchScreen", () => {
       json: async () => MATCH_PAYLOAD,
     })) as unknown as typeof fetch;
 
-    render(<MatchScreen />);
+    renderMatchScreen();
 
     await waitFor(() => {
       expect(screen.getByText("RCB")).toBeInTheDocument();
@@ -57,7 +67,7 @@ describe("MatchScreen", () => {
       json: async () => MATCH_PAYLOAD,
     })) as unknown as typeof fetch;
 
-    render(<MatchScreen />);
+    renderMatchScreen();
 
     await waitFor(() => {
       expect(screen.getByText(/2024 IPL final snapshot/i)).toBeInTheDocument();
@@ -70,7 +80,7 @@ describe("MatchScreen", () => {
       json: async () => MATCH_PAYLOAD,
     })) as unknown as typeof fetch;
 
-    render(<MatchScreen />);
+    renderMatchScreen();
     await waitFor(() => {
       expect(screen.getByText("9.50")).toBeInTheDocument();
     });
