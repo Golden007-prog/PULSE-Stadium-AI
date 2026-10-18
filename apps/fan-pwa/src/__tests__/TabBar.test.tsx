@@ -26,13 +26,15 @@ describe("TabBar", () => {
     // The active tab wraps its icon+label in a <button> with a cyan top border
     const askTab = screen.getByText("Ask").closest("button");
     expect(askTab).not.toBeNull();
-    expect(askTab?.getAttribute("style") ?? "").toContain("2px solid #00E5FF");
+    expect(askTab?.style.borderTopWidth).toBe("2px");
+    expect(askTab?.style.borderTopStyle).toBe("solid");
+    expect(askTab?.style.borderTopColor).toBe("rgb(0, 229, 255)");
 
     // Switch active tab; Ask no longer has the cyan border
     rerender(<TabBar active="match" onChange={() => undefined} />);
     const askTabInactive = screen.getByText("Ask").closest("button");
-    expect(askTabInactive?.getAttribute("style") ?? "").toContain(
-      "2px solid transparent"
-    );
+    expect(askTabInactive?.style.borderTopWidth).toBe("2px");
+    expect(askTabInactive?.style.borderTopStyle).toBe("solid");
+    expect(askTabInactive?.style.borderTopColor).toBe("transparent");
   });
 });
